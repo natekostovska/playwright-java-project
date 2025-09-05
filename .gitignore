@@ -1,8 +1,15 @@
+# Ignore node modules
+node_modules/
+
+# Ignore the target directory globally
 target/
+
+# But don't ignore maven-wrapper.jar inside .mvn/wrapper
 !.mvn/wrapper/maven-wrapper.jar
+
+# Do not ignore target folders inside src/main and src/test (and their subfolders)
 !**/src/main/**/target/
 !**/src/test/**/target/
-
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
