@@ -13,12 +13,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run Tests in Docker (using 'playwright-tests' image)
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+         registry: ghcr.io
+         username: ${{ github.actor }}
+         password: ${{ secrets.GHCR_PAT }}
+
+      - name: Pull Docker image
+        run: docker pull ghcr.io/natekostovska/playwright-tests:latest
+
+      - name: Run Tests in Docker
         run: |
           docker run --rm \
             -v ${{ github.workspace }}:/tests \
             -w /tests \
-            playwright-tests mvn verify
+            ghcr.io/natekostovska/playwright-tests:latest mvn verify
 
       - name: Upload Allure Report
         if: always()
