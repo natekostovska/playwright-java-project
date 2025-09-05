@@ -6,13 +6,11 @@ RUN apt-get update && \
     apt-get install -y curl zip unzip gnupg2 ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
-# Install SDKMAN and Maven 3.9.9
-RUN curl -s "https://get.sdkman.io" | bash && \
-    bash -c "source $HOME/.sdkman/bin/sdkman-init.sh && sdk install maven 3.9.9"
-
-# Set environment variables for Maven
-ENV MAVEN_HOME=/root/.sdkman/candidates/maven/current
-ENV PATH=$MAVEN_HOME/bin:$PATH
+# Manually install Maven
+RUN curl -fsSL https://downloads.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.zip -o /tmp/maven.zip && \
+    unzip /tmp/maven.zip -d /opt && \
+    ln -s /opt/apache-maven-3.9.9/bin/mvn /usr/bin/mvn && \
+    rm /tmp/maven.zip
 
 # Verify Maven installation
 RUN mvn --version
