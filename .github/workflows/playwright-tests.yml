@@ -1,39 +1,87 @@
-name: Java Playwright CI
+name: Playwright Tests
 
 on:
   push:
-    branches:
-      - main
-      - master
+    branches: [ "**" ]
   pull_request:
 
 jobs:
-  build-test:
+  test:
+    name: Run Playwright Tests in Docker
     runs-on: ubuntu-latest
+    env:
+      HEADLESS: true
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build Docker image
-        run: docker build -t my-playwright-java .
 
-      - name: Run tests inside Docker container
-        run: |
-          docker run --rm -v ${{ github.workspace }}/allure-results:/app/target/allure-results \
-            my-playwright-java mvn clean test
-
-      - name: Generate Allure report
-        run: docker run --rm -v ${{ github.workspace }}/allure-results:/app/target/allure-results -v ${{ github.workspace }}/allure-report:/app/target/allure-report my-playwright-java mvn allure:report
-
-      - name: Upload Allure results
-        uses: actions/upload-artifact@v3
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
         with:
-          name: allure-results
-          path: allure-results
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_PAT }}
 
-      - name: Upload Allure report (HTML)
-        uses: actions/upload-artifact@v3
+      - name: Build Docker image
+        run: |
+          docker build -t ghcr.io/natekostovska/playwright-tests:latest .
+
+      - name: Push Docker image
+        run: |
+          docker push ghcr.io/natekostovska/playwright-tests:latest 
+
+      - name: Pull Docker image
+        run: docker pull ghcr.io/natekostovska/playwright-tests:latest
+
+      - name: Verify Maven Installation in Docker
+        run: docker run --rm ghcr.io/natekostovska/playwright-tests:latest mvn -v
+
+      - name: Echo HEADLESS variable
+        run: |
+          echo "HEADLESS=$HEADLESS"
+          mvn clean test -e -DsuiteXmlFiles="src/test/resources/suites/smokeTests.xml" -Dheadless=${HEADLESS}
+          echo "Tests finished. Preparing for report handling..."
+          ls -la target || echo "target directory does not exist"  
+
+      - name: Run Tests and Generate Allure Report in Docker
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}:/tests \
+            -w /tests \
+            ghcr.io/natekostovska/playwright-tests:latest \
+            bash -c "
+              rm -rf allure/*
+              mvn test -DsuiteXmlFile=src/test/resources/suites/smokeTests.xml
+              mvn allure:report
+              ls -l allure/reports
+            "
+
+      - name: Upload Allure Report
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: allure-report
-          path: allure-report
+          path: allure/reports
+
+      - name: Upload Extent Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: extent-report
+          path: extent
+
+      - name: Upload JUnit XML Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-report
+          path: target/surefire-reports
+
+      - name: Deploy Allure Report to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: allure/reports

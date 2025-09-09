@@ -16,4 +16,4 @@ RUN mvn dependency:go-offline -B
 RUN npx playwright install --with-deps
 
 # Run tests
-CMD ["mvn", "clean", "test", "allure:report"]
+CMD ["mvn", "clean", "verify", "allure:report"]
