@@ -19,23 +19,6 @@
         <extent.reports>5.0.9</extent.reports>
     </properties>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-            <groupId>io.qameta.allure</groupId>
-            <artifactId>allure-bom</artifactId>
-            <version>${allure.version}</version>
-            <type>pom</type>
-            <scope>import</scope>
-            </dependency>
-            <!-- Ensure secure commons-io version remains -->
-            <dependency>
-                <groupId>commons-io</groupId>
-                <artifactId>commons-io</artifactId>
-                <version>2.15.1</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <dependencies>
         <!-- https://mvnrepository.com/artifact/com.microsoft.playwright/playwright -->
