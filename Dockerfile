@@ -1,34 +1,27 @@
-# ✅ Base image with Playwright, Node.js, and all dependencies
-FROM mcr.microsoft.com/playwright:v1.53.2-noble
+# Base image with Node.js, browsers (for Playwright)
+FROM mcr.microsoft.com/playwright:v1.53.2-focal
 
-# Disable interactive prompts
-ENV DEBIAN_FRONTEND=noninteractive
+# Install Java 20 and Maven
+RUN apt-get update && \
+    apt-get install -y openjdk-20-jdk maven && \
+    rm -rf /var/lib/apt/lists/*
 
-# Set working directory
-WORKDIR /tests
+ENV JAVA_HOME=/usr/lib/jvm/java-20-openjdk-amd64
+ENV PATH="$JAVA_HOME/bin:$PATH"
 
-# Copy the entire project
+WORKDIR /app
+
+# Copy project files
 COPY . .
 
-# ✅ Install Java 11 and Maven
-RUN apt-get update && \
-    apt-get install -y openjdk-11-jdk maven unzip curl && \
-    apt-get clean
+# Install Node dependencies (Playwright CLI)
+RUN npm install --force
 
-# Set JAVA_HOME environment variable
-ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
-ENV PATH="${JAVA_HOME}/bin:${PATH}"
-
-# Install Node.js dependencies (if package.json exists)
-RUN if [ -f "package.json" ]; then npm install --force; fi
-
-# ✅ Install Playwright Browsers
+# Install Playwright browsers
 RUN npx playwright install --with-deps
 
-# ✅ Pre-fetch Maven dependencies to cache layers
+# Pre-download Maven dependencies to speed up build (optional)
 RUN mvn dependency:resolve
 
-# ✅ Default command: run tests and generate Allure report
-CMD mvn clean test -DsuiteXmlFile=src/test/resources/suites/smokeTests.xml && \
-    mvn allure:report -Dallure.report.directory=allure/reports && \
-    echo "Allure report generated at: allure/reports"
+# Run tests and generate reports
+CMD mvn clean test verify
