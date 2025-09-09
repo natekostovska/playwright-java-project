@@ -1,19 +1,34 @@
-# Use official Playwright image with Node and browsers
-FROM mcr.microsoft.com/playwright:v1.53.2-java
+# Base image with Playwright and dependencies
+FROM mcr.microsoft.com/playwright:v1.53.2-noble
 
-# Set working directory inside container
-WORKDIR /app
+# Disable interactive prompts
+ENV DEBIAN_FRONTEND=noninteractive
 
-# Copy Maven config and source code
-COPY pom.xml .
-COPY src ./src
+# Set working directory
+WORKDIR /tests
 
-# Install Maven (already included in this image)
-# Run Maven to download dependencies
-RUN mvn dependency:go-offline -B
+# Copy project files
+COPY . .
 
-# Install Playwright browsers (needed for Playwright Java)
+# Install Java, Maven, and other tools
+RUN apt-get update && \
+    apt-get install -y openjdk-11-jdk maven unzip curl && \
+    apt-get clean
+
+# Set JAVA_HOME environment variable
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+ENV PATH="${JAVA_HOME}/bin:${PATH}"
+
+# Install Node.js dependencies (Playwright CLI etc.)
+RUN npm install --force
+
+# Install Playwright browsers
 RUN npx playwright install --with-deps
 
-# Run tests
-CMD ["mvn", "clean", "verify", "allure:report"]
+# Optional: Pre-fetch Maven dependencies to cache them
+RUN mvn dependency:resolve
+
+# Default command to run tests and generate Allure report
+CMD mvn clean test -DsuiteXmlFile=src/test/resources/suites/smokeTests.xml && \
+    mvn allure:report && \
+    echo "Allure report generated at: /tests/allure/reports"
