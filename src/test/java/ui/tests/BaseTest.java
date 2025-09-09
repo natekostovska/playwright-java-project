@@ -21,19 +21,12 @@ public class BaseTest {
     @BeforeClass(alwaysRun = true)
     static void setUpBrowser() {
         playwright = Playwright.create();
-
-        // Read HEADLESS env variable, default true if not set or invalid
-        boolean headless = true;
-        String headlessEnv = System.getenv("HEADLESS");
-        if (headlessEnv != null && headlessEnv.equalsIgnoreCase("false")) {
-            headless = false;
-        }
-
         browser = playwright.chromium().launch(
                 new BrowserType.LaunchOptions()
-                        .setHeadless(headless)
+                        .setHeadless(false)
                         .setArgs(Arrays.asList("--no-sandbox", "--disable-extensions", "--disable-gpu", "--start-maximized"))
         );
+
     }
 
     @BeforeMethod(alwaysRun = true, onlyForGroups = {"smoke", "regression"})

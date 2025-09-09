@@ -9,10 +9,15 @@ jobs:
   test:
     name: Run Playwright Tests in Docker
     runs-on: ubuntu-latest
+    env:
+      HEADLESS: true
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Echo HEADLESS variable
+        run: echo "HEADLESS=$HEADLESS"
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v2

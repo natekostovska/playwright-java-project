@@ -34,4 +34,4 @@ RUN npm install -g playwright && \
 WORKDIR /tests
 
 # Default CMD
-CMD ["mvn", "verify"]
+CMD ["mvn", "test"]
