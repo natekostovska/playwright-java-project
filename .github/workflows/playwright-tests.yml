@@ -21,6 +21,14 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_PAT }}
 
+      - name: Build Docker image
+        run: |
+          docker build -t ghcr.io/natekostovska/playwright-tests:latest .
+
+      - name: Push Docker image
+        run: |
+          docker push ghcr.io/natekostovska/playwright-tests:latest 
+
       - name: Pull Docker image
         run: docker pull ghcr.io/natekostovska/playwright-tests:latest
 
