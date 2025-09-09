@@ -23,6 +23,10 @@ jobs:
       - name: Pull Docker image
         run: docker pull ghcr.io/natekostovska/playwright-tests:latest
 
+      - name: Verify Maven Installation in Docker
+        run: |
+          docker run --rm ghcr.io/natekostovska/playwright-tests:latest mvn -v    
+
       - name: Run Tests in Docker
         run: |
           docker run --rm \

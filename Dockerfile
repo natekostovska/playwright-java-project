@@ -1,19 +1,30 @@
-# Use official OpenJDK 11 image as base
-FROM openjdk:11-jdk
+# Use official OpenJDK 11 image
+FROM openjdk:11-jdk-slim
 
-# Install system dependencies
-RUN apt-get update && \
-    apt-get install -y curl zip unzip gnupg2 ca-certificates nodejs npm && \
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    zip \
+    unzip \
+    gnupg2 \
+    ca-certificates \
+    nodejs \
+    npm && \
+    apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Install Maven manually (instead of using SDKMAN to simplify path issues)
-RUN curl -fsSL https://downloads.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.zip -o maven.zip && \
+# Install Maven (manually, and properly)
+ENV MAVEN_VERSION=3.9.9
+RUN curl -fsSL https://downloads.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.zip -o maven.zip && \
     unzip maven.zip -d /opt && \
-    ln -s /opt/apache-maven-3.9.9 /opt/maven && \
+    ln -s /opt/apache-maven-${MAVEN_VERSION} /opt/maven && \
     ln -s /opt/maven/bin/mvn /usr/bin/mvn && \
     rm maven.zip
 
-# Install Playwright and dependencies
+# Verify mvn works
+RUN mvn --version
+
+# Install Playwright and its dependencies
 RUN npm install -g playwright && \
     npx playwright install-deps && \
     npx playwright install
@@ -21,8 +32,8 @@ RUN npm install -g playwright && \
 # Set working directory
 WORKDIR /tests
 
-# Copy project files
+# Copy test project
 COPY . .
 
-# Default command (can be overridden)
-CMD ["mvn", "test", "-DsuiteXmlFile=src/test/resources/suites/smokeTests.xml"]
+# Default command (override in CI if needed)
+CMD ["mvn", "test"]
