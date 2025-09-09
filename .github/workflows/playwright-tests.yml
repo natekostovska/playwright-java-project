@@ -28,7 +28,9 @@ jobs:
           docker run --rm \
             -v ${{ github.workspace }}:/tests \
             -w /tests \
-            ghcr.io/natekostovska/playwright-tests:latest mvn verify
+            ghcr.io/natekostovska/playwright-tests:latest \
+            mvn test -DsuiteXmlFile=src/test/resources/suites/smokeTests.xml
+        
 
       - name: Upload Allure Report
         if: always()

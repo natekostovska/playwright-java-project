@@ -25,4 +25,4 @@ WORKDIR /tests
 COPY . .
 
 # Default command (can be overridden)
-CMD ["mvn", "verify"]
+CMD ["mvn", "test", "-DsuiteXmlFile=src/test/resources/suites/smokeTests.xml"]
