@@ -11,7 +11,6 @@ import ui.methods.AddAndUpdatePropertiesFileParameters;
 
 import java.util.Arrays;
 
-
 public class BaseTest {
     protected static Playwright playwright;
     public static Browser browser;
@@ -19,7 +18,7 @@ public class BaseTest {
     public static Page page;
 
     @BeforeClass(alwaysRun = true)
-    static void setUpBrowser() {
+    public static void setUpBrowser() {
         playwright = Playwright.create();
         browser = playwright.chromium().launch(
                 new BrowserType.LaunchOptions()
@@ -39,10 +38,8 @@ public class BaseTest {
         String title = page.title();
         Assert.assertEquals(title, "Practice Software Testing - Toolshop - v5.0");
 
-        page.locator(LoginPage.signInNavLink).click();
-        page.locator(LoginPage.inputEmail).fill(getProp("email"));
-        page.locator(LoginPage.inputPassword).fill(getProp("password"));
-        page.locator(LoginPage.clickLoginButton).click();
+        LoginPage.login(getProp("email"), getProp("password"));
+
 
     }
 
@@ -72,7 +69,7 @@ public class BaseTest {
         // return null; - if i want hardcoded values
     }
 
-    private String getProp(String key) {
+    protected String getProp(String key) {
         return AddAndUpdatePropertiesFileParameters.loadAndGetPropertyFromPropertiesFile(
                 key, "src/test/resources/Environment.properties"
         );

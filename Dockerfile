@@ -1,5 +1,5 @@
 # Base image with Node.js, browsers (for Playwright)
-FROM mcr.microsoft.com/playwright:v1.53.2-focal
+FROM mcr.microsoft.com/playwright/java:v1.54.0-noble
 
 # Install Java 20 and Maven
 RUN apt-get update && \

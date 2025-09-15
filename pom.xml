@@ -114,6 +114,7 @@
                     <argLine>
                         -javaagent:${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar
                     </argLine>
+                    <reportsDirectory>target/surefire-reports</reportsDirectory>
                 </configuration>
                 <dependencies>
                     <dependency>
