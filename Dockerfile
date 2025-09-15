@@ -1,14 +1,8 @@
 # Base image with Node.js, browsers (for Playwright)
 FROM mcr.microsoft.com/playwright/java:v1.54.0-noble
 
-# Install Java 20 and Maven
-RUN apt-get update && \
-    apt-get install -y openjdk-20-jdk maven && \
-    rm -rf /var/lib/apt/lists/*
 
-ENV JAVA_HOME=/usr/lib/jvm/java-20-openjdk-amd64
-ENV PATH="$JAVA_HOME/bin:$PATH"
-
+RUN mkdir /app
 WORKDIR /app
 
 # Copy project files
