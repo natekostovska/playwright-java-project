@@ -1,21 +1,25 @@
-# Base image with Node.js, browsers (for Playwright)
-FROM mcr.microsoft.com/playwright/java:v1.54.0-noble
+# Use Maven with Java 17 (Eclipse Temurin)
+FROM maven:3.9.6-eclipse-temurin-17
 
-
-RUN mkdir /app
+# Set working directory
 WORKDIR /app
 
-# Copy project files
-COPY . .
-
-# Install Node dependencies (Playwright CLI)
-RUN npm install --force
+# Install required system packages, Node.js 18, and Playwright
+RUN apt-get update && \
+    apt-get install -y curl gnupg && \
+    curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g playwright && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install Playwright browsers
-RUN npx playwright install --with-deps
+RUN playwright install
 
-# Pre-download Maven dependencies to speed up build (optional)
-RUN mvn dependency:resolve
+# Copy your project files into the container
+COPY . .
 
-# Run tests and generate reports
-CMD mvn clean test verify
+# Build the Maven project (skip test execution)
+RUN mvn clean install -DskipTests
+
+# Run tests using TestNG with smokeTests.xml suite
+CMD ["mvn", "test", "-DsuiteXmlFile=src/test/resources/suites/smokeTests.xml"]

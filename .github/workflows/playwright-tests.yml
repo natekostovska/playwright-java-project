@@ -11,8 +11,9 @@ jobs:
     name: Playwright Tests
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright/java:v1.54.0-noble
+      image: your-dockerhub-username/playwright-java:latest
       options: --user 1001
+
     steps:
       - uses: actions/checkout@v4
 
