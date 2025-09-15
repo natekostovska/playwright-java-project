@@ -11,7 +11,7 @@ jobs:
     name: Playwright Tests
     runs-on: ubuntu-latest
     container:
-      image: your-dockerhub-username/playwright-java:latest
+      image: natek307/playwright-java:latest
       options: --user 1001
 
     steps:
