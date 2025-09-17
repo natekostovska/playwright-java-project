@@ -19,10 +19,11 @@ public class BaseTest {
 
     @BeforeClass(alwaysRun = true)
     public static void setUpBrowser() {
+        boolean isCI = Boolean.parseBoolean(System.getenv().getOrDefault("CI", "false"));
         playwright = Playwright.create();
         browser = playwright.chromium().launch(
                 new BrowserType.LaunchOptions()
-                        .setHeadless(false)
+                        .setHeadless(isCI)
                         .setArgs(Arrays.asList("--no-sandbox", "--disable-extensions", "--disable-gpu", "--start-maximized"))
         );
 

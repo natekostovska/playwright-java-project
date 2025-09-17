@@ -1,12 +1,10 @@
-# Use Maven with Java 17
 FROM maven:3.9.6-eclipse-temurin-17
 
-# Set working directory
 WORKDIR /app
 
-# Install required system packages (Playwright browser dependencies)
+# Install OS dependencies required for running Playwright browsers
 RUN apt-get update && apt-get install -y \
-    wget curl unzip gnupg2 \
+    curl wget unzip gnupg2 \
     libglib2.0-0 \
     libnspr4 \
     libnss3 \
@@ -27,16 +25,21 @@ RUN apt-get update && apt-get install -y \
     libcairo2 \
     libpango-1.0-0 \
     libasound2 \
+    libx11-xcb1 \
+    libxcursor1 \
+    libgtk-3-0 \
+    libpangocairo-1.0-0 \
+    libcairo-gobject2 \
+    libgdk-pixbuf-2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy your project files into the container
 COPY . .
 
-# Install Playwright browsers for Java
+# Install browsers for Playwright Java
 RUN mvn exec:java -Dexec.mainClass="com.microsoft.playwright.CLI" -Dexec.args="install"
 
-# Pre-build Maven project (skip tests to speed up image)
 RUN mvn clean install -DskipTests
 
-# Run TestNG suite (e.g. smoke tests)
+ENV CI=true
+
 CMD ["mvn", "test", "-DsuiteXmlFile=src/test/resources/suites/smokeTests.xml"]
