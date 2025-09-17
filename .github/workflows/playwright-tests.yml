@@ -11,7 +11,10 @@ jobs:
     name: Playwright Tests
     runs-on: ubuntu-latest
     container:
-      image: natek307/playwright-java:latest
+      image: natek338/playwright-java:latest
+      credentials:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
       options: --user 1001
 
     steps:
@@ -26,8 +29,9 @@ jobs:
           name: surefire-reports
           path: target/surefire-reports
 
-      - name: Upload Allure results (if you generate them)
+      - name: Upload Allure report
         uses: actions/upload-artifact@v4
         with:
-          name: allure-results
-          path: target/allure-results
+          name: allure-report
+          path: allure/reports
+
