@@ -1,6 +1,6 @@
 FROM maven:3.9.6-eclipse-temurin-17
 
-WORKDIR /app
+WORKDIR /tests
 
 # Install OS dependencies required for running Playwright browsers
 RUN apt-get update && apt-get install -y \
@@ -42,4 +42,4 @@ RUN mvn clean install -DskipTests
 
 ENV CI=true
 
-CMD ["mvn", "test", "-DsuiteXmlFile=src/test/resources/suites/smokeTests.xml"]
+CMD ["mvn", "verify"]
