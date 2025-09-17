@@ -11,7 +11,7 @@ jobs:
     name: Playwright Tests
     runs-on: ubuntu-latest
     container:
-      image: natek338/playwright-java:latest
+      image: nate338/playwright-java:latest
       credentials:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
