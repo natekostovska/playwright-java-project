@@ -31,11 +31,6 @@ jobs:
           mvn allure:report
           ls -l allure/reports
 
-      - name: Upload Surefire reports
-        uses: actions/upload-artifact@v4
-        with:
-          name: surefire-reports
-          path: target/surefire-reports
 
       - name: Upload Allure report
         uses: actions/upload-artifact@v4
