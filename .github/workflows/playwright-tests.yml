@@ -15,15 +15,27 @@ jobs:
       credentials:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-      options: --user 1001
+      options: --user root
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Build and test
         run: mvn clean verify --no-transfer-progress
 
+      - name: Clean and generate Allure report
+        run: |
+          echo "Cleaning and generating Allure report"
+          rm -rf allure/* || true   # Prevent error if folder doesn't exist
+          mvn allure:report
+          ls -l allure/reports
 
+      - name: Upload Surefire reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: target/surefire-reports
 
       - name: Upload Allure report
         uses: actions/upload-artifact@v4
@@ -31,3 +43,8 @@ jobs:
           name: allure-report
           path: allure/reports
 
+      - name: Upload ExtentReports
+        uses: actions/upload-artifact@v4
+        with:
+          name: extent-reports
+          path: extent/reports
