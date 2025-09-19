@@ -1,6 +1,6 @@
 # Ignore node modules
 node_modules/
-
+target
 
 # But don't ignore maven-wrapper.jar inside .mvn/wrapper
 !.mvn/wrapper/maven-wrapper.jar
