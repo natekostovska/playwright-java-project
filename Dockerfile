@@ -1,6 +1,10 @@
-FROM maven:3.9.6-eclipse-temurin-17
+FROM eclipse-temurin:11-jdk
 
-WORKDIR /tests
+# Install Maven
+RUN apt-get update && apt-get install -y maven \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /workspace
 
 # Install OS dependencies required for running Playwright browsers
 RUN apt-get update && apt-get install -y \
