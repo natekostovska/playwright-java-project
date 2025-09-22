@@ -21,25 +21,39 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build and test
-        run: mvn clean verify -Dmaven.test.failure.ignore=true --no-transfer-progress
-
-      - name: Clean and generate Allure report
+      - name: Cleanup previous reports
         run: |
-          echo "Cleaning and generating Allure report"
-          rm -rf allure/* || true   # Prevent error if folder doesn't exist
-          mvn allure:report
-          ls -l allure/reports
+          echo "Cleaning previous reports..."
+          rm -rf allure/* extent/* target/* || true  
+
+      - name: Build and test
+        run: mvn clean verify --no-transfer-progress
+
+      - name: Generate Allure report
+        if: always()
+        run: |
+            echo "Generating Allure report..."
+            mvn allure:report
+            ls -l allure/reports
 
 
       - name: Upload Allure report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: allure-report
           path: allure/reports
 
       - name: Upload ExtentReports
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: extent-reports
-          path: extent/reports
+          path: extent
+
+      - name: Upload TestNG Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: testng-reports
+          path: target/surefire-reports
