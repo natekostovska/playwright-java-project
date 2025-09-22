@@ -4,8 +4,8 @@ import ui.utils.PlaywrightMethods;
 
 public class LoginPage extends PlaywrightMethods {
     public static final String signInNavLink = "[data-test='nav-sign-in']";
-    public static final String inputEmail = "#email";             // Email input field
-    public static final String inputPassword = "#password";       // Password input field
+    public static final String inputEmail = "#email";
+    public static final String inputPassword = "#password";
     public static final String clickLoginButton = "[data-test='login-submit']";
     public static final String loginHeading = "h3:has-text('Login')";
     public static final String accountTitle = "[data-test='page-title']";

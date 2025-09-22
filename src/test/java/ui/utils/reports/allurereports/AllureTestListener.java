@@ -1,4 +1,4 @@
-package reports.allurereports;
+package ui.utils.reports.allurereports;
 
 import com.microsoft.playwright.Page;
 import io.qameta.allure.Allure;

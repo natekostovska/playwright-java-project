@@ -2,8 +2,8 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
 <suite name="Login Test">
     <listeners>
-        <listener class-name="reports.allurereports.AllureTestListener"/>
-        <listener class-name="reports.extentreports.TestListener"/>
+        <listener class-name="ui.utils.reports.allurereports.AllureTestListener"/>
+        <listener class-name="ui.utils.reports.extentreports.TestListener"/>
     </listeners>
     <test name="Login">
         <groups>
