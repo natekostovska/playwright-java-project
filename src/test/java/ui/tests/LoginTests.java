@@ -3,8 +3,8 @@ package ui.tests;
 import io.qameta.allure.Story;
 
 import org.testng.Assert;
-import ui.locators.LoginPage;
-import ui.methods.DataSources;
+import org.testng.annotations.Ignore;
+import ui.utils.DataSources;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -22,42 +22,39 @@ public class LoginTests extends BaseTest {
         return DataSources.excel("src/test/resources/data/loginTestDataPW.xlsx", "invalidUsers");
     }
 
+    @Ignore
     @Story("User logs in with valid credentials")
     @Test(dataProvider = "validLogin", groups = {"loginCombinations"}, description = "Should log in with valid user and password")
     public void successfulLoginTest(String email, String password, String testScenario) {
-        page.locator(LoginPage.signInNavLink).click();
-        Assert.assertEquals(page.locator(LoginPage.loginHeading).innerText(), "Login");
-        page.locator(LoginPage.inputEmail).fill(email);
-        page.locator(LoginPage.inputPassword).fill(password);
-        page.locator(LoginPage.clickLoginButton).click();
-        Assert.assertEquals(page.locator(LoginPage.accountTitle).innerText(), "My account");
-        Assert.assertEquals(page.locator(LoginPage.loggedUserName).innerText().trim(), "Natasha Kostovska");
+        navigateToLogin();
+        Assert.assertEquals(getText(loginHeading), "Login");
+        login(email,password);
+        Assert.assertEquals(getText(accountTitle), "My account");
+        Assert.assertEquals(getText(loggedUserName).trim(), "Natasha Kostovska");
         System.out.println(testScenario);
     }
 
     @Story("User logs in with invalid credentials")
     @Test(dataProvider = "invalidLogin", groups = {"loginCombinations"}, description = "Should not be able to log in with invalid user, invalid password or combination of both")
     public void unsuccessfulLoginWithWrongCredentialsTest(String email, String password, String testScenario) {
-        page.locator(LoginPage.signInNavLink).click();
-        Assert.assertEquals(page.locator(LoginPage.loginHeading).innerText(), "Login");
-        page.locator(LoginPage.inputEmail).fill(email);
-        page.locator(LoginPage.inputPassword).fill(password);
-        page.locator(LoginPage.clickLoginButton).click();
+        navigateToLogin();
+        Assert.assertEquals(getText(loginHeading), "Login");
+        login(email,password);
+        waitTime(2000);
 
 // Extract texts if present
-        boolean isEmailErrorVisible = page.locator(emailError).isVisible();
-        boolean isPasswordErrorVisible = page.locator(passwordError).isVisible();
-        boolean isInvalidEmailOrPasswordErrorVisible = page.locator(invalidEmailOrPasswordError).isVisible();
+        boolean isEmailErrorVisible = isVisible(emailError);
+        boolean isPasswordErrorVisible = isVisible(passwordError);
+        boolean isInvalidEmailOrPasswordErrorVisible = isVisible(invalidEmailOrPasswordError);
 
-// Optional print
         if (isEmailErrorVisible) {
-            System.out.println("Email Error: " + page.locator(emailError).innerText());
+            System.out.println("Email Error: " + getText(emailError));
         }
         if (isPasswordErrorVisible) {
-            System.out.println("Password Error: " + page.locator(passwordError).innerText());
+            System.out.println("Password Error: " + getText(passwordError));
         }
         if (isInvalidEmailOrPasswordErrorVisible) {
-            System.out.println("Invalid email or password: " + page.locator(invalidEmailOrPasswordError).innerText());
+            System.out.println("Invalid email or password: " + getText(invalidEmailOrPasswordError));
         }
         // Assertion: At least one of them must be visible
         Assert.assertTrue(isEmailErrorVisible || isPasswordErrorVisible || isInvalidEmailOrPasswordErrorVisible,

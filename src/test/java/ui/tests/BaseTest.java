@@ -1,73 +1,48 @@
 package ui.tests;
 
-import com.microsoft.playwright.*;
+import com.microsoft.playwright.Page;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.*;
+import ui.framework.PlaywrightBrowserManager;
 import ui.locators.LoginPage;
-import ui.methods.AddAndUpdatePropertiesFileParameters;
-
-import java.util.Arrays;
+import ui.utils.AddAndUpdatePropertiesFileParameters;
 
 public class BaseTest {
-    protected static Playwright playwright;
-    public static Browser browser;
-    protected static BrowserContext browserContext;
+
+    protected PlaywrightBrowserManager browserManager;
     public static Page page;
 
     @BeforeClass(alwaysRun = true)
-    public static void setUpBrowser() {
-        boolean isCI = Boolean.parseBoolean(System.getenv().getOrDefault("CI", "false"));
-        playwright = Playwright.create();
-        browser = playwright.chromium().launch(
-                new BrowserType.LaunchOptions()
-                        .setHeadless(isCI)
-                        .setArgs(Arrays.asList("--no-sandbox", "--disable-extensions", "--disable-gpu", "--start-maximized"))
-        );
-
+    public void setupBrowserManager() {
+        browserManager = new PlaywrightBrowserManager();
     }
 
-    @BeforeMethod(alwaysRun = true, onlyForGroups = {"smoke", "regression"})
-    public void beforeMethodForLoggedInTests() {
-        browserContext = browser.newContext(new Browser.NewContextOptions()
-                .setViewportSize(null)); // Allow real screen size
-        page = browserContext.newPage();
+    @BeforeMethod(alwaysRun = true)
+    @Parameters({"testGroup"})
+    public void setUp(@Optional("") String testGroup) {
+        final String browser = getProp("browser");
+        // Detect CI
+        final boolean headless; // Run headless ONLY on CI
+        headless = Boolean.parseBoolean(System.getenv().getOrDefault("CI", "false"));
 
+        page = browserManager.open(browser, headless);
         page.navigate(getProp("url"));
-        String title = page.title();
-        Assert.assertEquals(title, "Practice Software Testing - Toolshop - v5.0");
 
-        LoginPage.login(getProp("email"), getProp("password"));
-
-
-    }
-
-    @BeforeMethod(alwaysRun = true, onlyForGroups = {"loginCombinations"})
-    public void beforeMethodForLoginTests() {
-        browserContext = browser.newContext(new Browser.NewContextOptions()
-                .setViewportSize(null)); // Allow real screen size
-        page = browserContext.newPage();
-        page.navigate(getProp("url"));
+        if (testGroup.equalsIgnoreCase("smoke") || testGroup.equalsIgnoreCase("regression")) {
+            String title = page.title();
+            Assert.assertEquals(title, "Practice Software Testing - Toolshop - v5.0");
+            LoginPage.navigateToLogin();
+        }
     }
 
     @AfterMethod(alwaysRun = true)
-    void cleanupPage() {
-        if (page != null) page.close();
-        if (browserContext != null) browserContext.close();
+    public void tearDown() {
+        browserManager.closePageOnly();
     }
 
     @AfterClass(alwaysRun = true)
-    static void cleanUp() {
-        if (browser != null) browser.close();
-        if (playwright != null) playwright.close();
-    }
-
-
-    private static BrowserType.LaunchOptions headlessSlow(int delay) {
-        return new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(delay);
-        // return null; - if i want hardcoded values
+    public void closeAll() {
+        browserManager.close();
     }
 
     protected String getProp(String key) {
@@ -75,5 +50,4 @@ public class BaseTest {
                 key, "src/test/resources/Environment.properties"
         );
     }
-
 }
