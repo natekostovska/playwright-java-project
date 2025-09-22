@@ -22,11 +22,9 @@ public class LoginTests extends BaseTest {
         return DataSources.excel("src/test/resources/data/loginTestDataPW.xlsx", "invalidUsers");
     }
 
-    @Ignore
     @Story("User logs in with valid credentials")
     @Test(dataProvider = "validLogin", groups = {"loginCombinations"}, description = "Should log in with valid user and password")
     public void successfulLoginTest(String email, String password, String testScenario) {
-        navigateToLogin();
         Assert.assertEquals(getText(loginHeading), "Login");
         login(email,password);
         Assert.assertEquals(getText(accountTitle), "My account");
@@ -37,7 +35,6 @@ public class LoginTests extends BaseTest {
     @Story("User logs in with invalid credentials")
     @Test(dataProvider = "invalidLogin", groups = {"loginCombinations"}, description = "Should not be able to log in with invalid user, invalid password or combination of both")
     public void unsuccessfulLoginWithWrongCredentialsTest(String email, String password, String testScenario) {
-        navigateToLogin();
         Assert.assertEquals(getText(loginHeading), "Login");
         login(email,password);
         waitTime(2000);

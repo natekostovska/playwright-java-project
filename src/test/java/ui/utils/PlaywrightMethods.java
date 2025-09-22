@@ -22,7 +22,7 @@ public class PlaywrightMethods {
     }
 
     public static void click(String selector) {
-        page.locator(selector).click();
+        page.waitForSelector(selector).click();
     }
 
     public void click(String selector, int index) {

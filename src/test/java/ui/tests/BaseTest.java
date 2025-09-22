@@ -2,10 +2,12 @@ package ui.tests;
 
 import com.microsoft.playwright.Page;
 import org.testng.Assert;
+import org.testng.ITestResult;
 import org.testng.annotations.*;
 import ui.framework.PlaywrightBrowserManager;
-import ui.locators.LoginPage;
 import ui.utils.AddAndUpdatePropertiesFileParameters;
+
+import static ui.locators.LoginPage.navigateToLogin;
 
 public class BaseTest {
 
@@ -18,21 +20,21 @@ public class BaseTest {
     }
 
     @BeforeMethod(alwaysRun = true)
-    @Parameters({"testGroup"})
-    public void setUp(@Optional("") String testGroup) {
-        final String browser = getProp("browser");
-        // Detect CI
-        final boolean headless; // Run headless ONLY on CI
-        headless = Boolean.parseBoolean(System.getenv().getOrDefault("CI", "false"));
+    public void setUp(ITestResult result) {
+        String[] groups = result.getMethod().getGroups();
+        String browser = getProp("browser");
+        boolean headless = Boolean.parseBoolean(System.getenv().getOrDefault("CI", "false"));
 
         page = browserManager.open(browser, headless);
         page.navigate(getProp("url"));
-        LoginPage.navigateToLogin();
 
-        if (testGroup.equalsIgnoreCase("smoke") || testGroup.equalsIgnoreCase("regression")) {
+        if (containsGroup(groups, "smoke") || containsGroup(groups, "regression")) {
             String title = page.title();
             Assert.assertEquals(title, "Practice Software Testing - Toolshop - v5.0");
-            LoginPage.navigateToLogin();
+        }
+
+        if (containsGroup(groups, "loginCombinations")) {
+            navigateToLogin();
         }
     }
 
@@ -50,5 +52,11 @@ public class BaseTest {
         return AddAndUpdatePropertiesFileParameters.loadAndGetPropertyFromPropertiesFile(
                 key, "src/test/resources/Environment.properties"
         );
+    }
+    private boolean containsGroup(String[] groups, String target) {
+        for (String group : groups) {
+            if (group.equalsIgnoreCase(target)) return true;
+        }
+        return false;
     }
 }
