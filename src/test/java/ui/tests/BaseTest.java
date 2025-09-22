@@ -27,6 +27,7 @@ public class BaseTest {
 
         page = browserManager.open(browser, headless);
         page.navigate(getProp("url"));
+        LoginPage.navigateToLogin();
 
         if (testGroup.equalsIgnoreCase("smoke") || testGroup.equalsIgnoreCase("regression")) {
             String title = page.title();
