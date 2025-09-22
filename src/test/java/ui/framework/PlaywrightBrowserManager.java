@@ -23,7 +23,13 @@ public class PlaywrightBrowserManager {
                                 "--disable-gpu",
                                 "--no-sandbox",
                                 "--disable-dev-shm-usage",
-                                "--disable-extensions", "--start-maximized")));
+                                "--disable-extensions",
+                                "--start-maximized",
+                                "--disable-setuid-sandbox",
+                                "--remote-debugging-port=0",
+                                "--disable-background-timer-throttling",
+                                "--disable-backgrounding-occluded-windows",
+                                "--disable-renderer-backgrounding")));
                 break;
             case "firefox":
                 browser = playwright.firefox().launch(new BrowserType.LaunchOptions()
