@@ -28,7 +28,7 @@ public class BaseTest {
         page = browserManager.open(browser, headless);
         page.navigate(getProp("url"));
 
-        if (testGroup.equalsIgnoreCase("smoke") || testGroup.equalsIgnoreCase("regression")) {
+        if (testGroup.equalsIgnoreCase("smoke") || testGroup.equalsIgnoreCase("regression") || testGroup.equalsIgnoreCase("loginCombinations")) {
             String title = page.title();
             Assert.assertEquals(title, "Practice Software Testing - Toolshop - v5.0");
             LoginPage.navigateToLogin();

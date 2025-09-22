@@ -36,7 +36,6 @@ jobs:
             mvn allure:report
             ls -l allure/reports
 
-
       - name: Upload Allure report
         if: always()
         uses: actions/upload-artifact@v4
