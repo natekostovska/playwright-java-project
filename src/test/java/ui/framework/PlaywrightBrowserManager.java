@@ -18,7 +18,7 @@ public class PlaywrightBrowserManager {
             case "chrome":
                 browser = playwright.chromium().launch(new BrowserType.LaunchOptions()
                         .setHeadless(headless)
-                        .setSlowMo(headless ? 200 : 0) // slows actions in CI by 200ms
+                        .setSlowMo(1000)
                         .setArgs(Arrays.asList("--disable-blink-features=AutomationControlled",
                                 "--disable-gpu",
                                 "--no-sandbox",
