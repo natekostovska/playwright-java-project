@@ -3,7 +3,6 @@ package ui.tests;
 import io.qameta.allure.Story;
 
 import org.testng.Assert;
-import org.testng.annotations.Ignore;
 import ui.utils.DataSources;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;

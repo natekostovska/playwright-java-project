@@ -18,7 +18,12 @@ public class PlaywrightBrowserManager {
             case "chrome":
                 browser = playwright.chromium().launch(new BrowserType.LaunchOptions()
                         .setHeadless(headless)
-                        .setArgs(Arrays.asList("--disable-extensions", "--start-maximized")));
+                        .setSlowMo(headless ? 200 : 0) // slows actions in CI by 200ms
+                        .setArgs(Arrays.asList("--disable-blink-features=AutomationControlled",
+                                "--disable-gpu",
+                                "--no-sandbox",
+                                "--disable-dev-shm-usage",
+                                "--disable-extensions", "--start-maximized")));
                 break;
             case "firefox":
                 browser = playwright.firefox().launch(new BrowserType.LaunchOptions()

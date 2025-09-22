@@ -1,6 +1,7 @@
 package ui.tests;
 
 import com.microsoft.playwright.Page;
+import com.microsoft.playwright.options.LoadState;
 import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.annotations.*;
@@ -27,6 +28,8 @@ public class BaseTest {
 
         page = browserManager.open(browser, headless);
         page.navigate(getProp("url"));
+        page.waitForLoadState(LoadState.NETWORKIDLE);
+
 
         if (containsGroup(groups, "smoke") || containsGroup(groups, "regression")) {
             String title = page.title();
