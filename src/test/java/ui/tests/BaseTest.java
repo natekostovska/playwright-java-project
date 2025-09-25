@@ -1,9 +1,6 @@
 package ui.tests;
 
 import com.microsoft.playwright.Page;
-import com.microsoft.playwright.options.LoadState;
-import org.testng.Assert;
-import org.testng.ITestResult;
 import org.testng.annotations.*;
 import ui.framework.PlaywrightBrowserManager;
 import ui.locators.LoginPage;
@@ -20,8 +17,8 @@ public class BaseTest {
         browserManager = new PlaywrightBrowserManager();
     }
 
-    @BeforeMethod(alwaysRun = true)
-    public void setUp(ITestResult result) {
+    @BeforeMethod(onlyForGroups = {"loginCombinations"})
+    public void setUp() {
         String browser = getProp("browser");
         boolean headless = Boolean.parseBoolean(System.getenv().getOrDefault("CI", "false"));
 
