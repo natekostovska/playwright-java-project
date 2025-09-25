@@ -8,6 +8,8 @@ import ui.locators.LoginPage;
 import ui.utils.DataSources;
 import ui.utils.PlaywrightMethods;
 
+import static ui.locators.LoginPage.*;
+
 public class LoginTests extends BaseTest {
     @DataProvider(name = "validLogin")
     public Object[][] validUsers() {
@@ -23,12 +25,12 @@ public class LoginTests extends BaseTest {
             description = "Should log in with valid user and password")
     @Story("User logs in with valid credentials")
     public void successfulLoginTest(String email, String password, String testScenario) {
-       Assert.assertEquals(loginPage.getText(LoginPage.loginHeading), "Login");
+       Assert.assertEquals(loginPage.getText(loginHeading), "Login");
 
         loginPage.login(email, password);
 
-        Assert.assertEquals(loginPage.getText(LoginPage.accountTitle), "My account");
-        Assert.assertEquals(loginPage.getText(LoginPage.loggedUserName).trim(), "Natasha Kostovska");
+        Assert.assertEquals(loginPage.getText(accountTitle), "My account");
+        Assert.assertEquals(loginPage.getText(loggedUserName).trim(), "Natasha Kostovska");
 
         System.out.println(testScenario);
     }
@@ -37,23 +39,21 @@ public class LoginTests extends BaseTest {
             description = "Should not be able to log in with invalid user, invalid password or combination of both")
     @Story("User logs in with invalid credentials")
     public void unsuccessfulLoginWithWrongCredentialsTest(String email, String password, String testScenario) {
-        loginPage = new LoginPage(page);
-
-        Assert.assertEquals(loginPage.getText(LoginPage.loginHeading), "Login");
+         Assert.assertEquals(loginPage.getText(loginHeading), "Login");
 
         loginPage.login(email, password);
         PlaywrightMethods.waitTime(2000);
 
-        boolean isEmailErrorVisible = loginPage.isVisible(LoginPage.emailError);
-        boolean isPasswordErrorVisible = loginPage.isVisible(LoginPage.passwordError);
-        boolean isInvalidEmailOrPasswordErrorVisible = loginPage.isVisible(LoginPage.invalidEmailOrPasswordError);
+        boolean isEmailErrorVisible = loginPage.isVisible(emailError);
+        boolean isPasswordErrorVisible = loginPage.isVisible(passwordError);
+        boolean isInvalidEmailOrPasswordErrorVisible = loginPage.isVisible(invalidEmailOrPasswordError);
 
         if (isEmailErrorVisible) {
-            System.out.println("Email Error: " + loginPage.getText(LoginPage.emailError));
+            System.out.println("Email Error: " + loginPage.getText(emailError));
         } else if (isPasswordErrorVisible) {
-            System.out.println("Password Error: " + loginPage.getText(LoginPage.passwordError));
+            System.out.println("Password Error: " + loginPage.getText(passwordError));
         } else if (isInvalidEmailOrPasswordErrorVisible) {
-            System.out.println("Invalid email or password: " + loginPage.getText(LoginPage.invalidEmailOrPasswordError));
+            System.out.println("Invalid email or password: " + loginPage.getText(invalidEmailOrPasswordError));
         }
 
         Assert.assertTrue(
