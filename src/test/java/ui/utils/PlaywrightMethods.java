@@ -7,17 +7,13 @@ import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.BoundingBox;
 import com.microsoft.playwright.options.MouseButton;
 import com.microsoft.playwright.options.SelectOption;
+import ui.tests.BaseTest;
 
 import java.nio.file.Paths;
 import java.util.List;
 
-public class PlaywrightMethods {
+public class PlaywrightMethods extends BaseTest {
     // ========== BASIC LOCATOR ACTIONS ==========
-    private final Page page;
-
-    public PlaywrightMethods(Page page) {
-        this.page = page;
-    }
 
     public Locator locator(String selector) {
         return page.locator(selector);

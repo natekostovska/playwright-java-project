@@ -23,7 +23,6 @@ public class BaseTest {
         boolean headless = Boolean.parseBoolean(System.getenv().getOrDefault("CI", "false"));
 
         page = browserManager.open(browser, headless);
-        loginPage = new LoginPage(page);
         page.setDefaultTimeout(10000);
         page.setDefaultNavigationTimeout(10000);
         page.navigate(getProp("url"));

@@ -4,7 +4,6 @@ import io.qameta.allure.Story;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import ui.locators.LoginPage;
 import ui.utils.DataSources;
 import ui.utils.PlaywrightMethods;
 
