@@ -22,14 +22,14 @@ public class BaseTest {
 
     @BeforeMethod(alwaysRun = true)
     public void setUp(ITestResult result) {
-        String[] groups = result.getMethod().getGroups();
         String browser = getProp("browser");
         boolean headless = Boolean.parseBoolean(System.getenv().getOrDefault("CI", "false"));
 
         page = browserManager.open(browser, headless);
         loginPage = new LoginPage(page);
+        page.setDefaultTimeout(10000);
+        page.setDefaultNavigationTimeout(10000);
         page.navigate(getProp("url"));
-        page.waitForLoadState(LoadState.NETWORKIDLE);
         String title = page.title();
         Assert.assertEquals(title, "Practice Software Testing - Toolshop - v5.0");
         loginPage.navigateToLogin();
