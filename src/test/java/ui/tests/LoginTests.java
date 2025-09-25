@@ -46,10 +46,10 @@ public class LoginTests extends BaseTest {
         if (isEmailErrorVisible) {
             System.out.println("Email Error: " + getText(emailError));
         }
-        if (isPasswordErrorVisible) {
+        else if (isPasswordErrorVisible) {
             System.out.println("Password Error: " + getText(passwordError));
         }
-        if (isInvalidEmailOrPasswordErrorVisible) {
+        else if (isInvalidEmailOrPasswordErrorVisible) {
             System.out.println("Invalid email or password: " + getText(invalidEmailOrPasswordError));
         }
         // Assertion: At least one of them must be visible

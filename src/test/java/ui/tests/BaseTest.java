@@ -36,7 +36,7 @@ public class BaseTest {
             Assert.assertEquals(title, "Practice Software Testing - Toolshop - v5.0");
         }
 
-        if (containsGroup(groups, "loginCombinations")) {
+        else if (containsGroup(groups, "loginCombinations")) {
             navigateToLogin();
         }
     }
