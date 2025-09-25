@@ -13,9 +13,6 @@ ENV TZ=UTC
 
 WORKDIR /workspace
 
-COPY pom.xml .
-RUN mvn dependency:go-offline
-
 COPY . .
 
 RUN mvn exec:java -Dexec.mainClass="com.microsoft.playwright.CLI" -Dexec.args="install"
