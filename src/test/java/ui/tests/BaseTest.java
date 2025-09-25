@@ -27,19 +27,12 @@ public class BaseTest {
         boolean headless = Boolean.parseBoolean(System.getenv().getOrDefault("CI", "false"));
 
         page = browserManager.open(browser, headless);
-        loginPage= new LoginPage(page);
+        loginPage = new LoginPage(page);
         page.navigate(getProp("url"));
         page.waitForLoadState(LoadState.NETWORKIDLE);
-
-
-        if (containsGroup(groups, "smoke") || containsGroup(groups, "regression")) {
-            String title = page.title();
-            Assert.assertEquals(title, "Practice Software Testing - Toolshop - v5.0");
-        }
-
-        else if (containsGroup(groups, "loginCombinations")) {
-            loginPage.navigateToLogin();
-        }
+        String title = page.title();
+        Assert.assertEquals(title, "Practice Software Testing - Toolshop - v5.0");
+        loginPage.navigateToLogin();
     }
 
     @AfterMethod(alwaysRun = true)
@@ -53,10 +46,5 @@ public class BaseTest {
                 key, "src/test/resources/Environment.properties"
         );
     }
-    private boolean containsGroup(String[] groups, String target) {
-        for (String group : groups) {
-            if (group.equalsIgnoreCase(target)) return true;
-        }
-        return false;
-    }
+
 }
