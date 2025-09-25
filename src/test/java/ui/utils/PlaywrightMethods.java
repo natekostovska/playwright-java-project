@@ -1,18 +1,19 @@
 package ui.utils;
 
-import com.microsoft.playwright.BrowserContext;
-import com.microsoft.playwright.Frame;
-import com.microsoft.playwright.Locator;
-import com.microsoft.playwright.Page;
-import com.microsoft.playwright.options.BoundingBox;
-import com.microsoft.playwright.options.MouseButton;
-import com.microsoft.playwright.options.SelectOption;
-import ui.tests.BaseTest;
-
+import com.microsoft.playwright.*;
+import com.microsoft.playwright.options.*;
 import java.nio.file.Paths;
 import java.util.List;
 
-public class PlaywrightMethods extends BaseTest {
+public class PlaywrightMethods {
+
+    protected Page page;
+
+    // Constructor to initialize page
+    public PlaywrightMethods(Page page) {
+        this.page = page;
+    }
+
     // ========== BASIC LOCATOR ACTIONS ==========
 
     public Locator locator(String selector) {
@@ -56,11 +57,11 @@ public class PlaywrightMethods extends BaseTest {
         page.locator(selector).fill("");
     }
 
-    public  boolean isVisible(String selector) {
+    public boolean isVisible(String selector) {
         return page.locator(selector).isVisible();
     }
 
-    public  boolean isEnabled(String selector) {
+    public boolean isEnabled(String selector) {
         return page.locator(selector).isEnabled();
     }
 
@@ -171,7 +172,7 @@ public class PlaywrightMethods extends BaseTest {
     public static void waitTime(int waitTime) {
         try {
             Thread.sleep(waitTime);
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
     }
 }

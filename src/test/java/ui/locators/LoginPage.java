@@ -11,9 +11,13 @@ public class LoginPage extends PlaywrightMethods {
     public static final String loginHeading = "h3:has-text('Login')";
     public static final String accountTitle = "[data-test='page-title']";
     public static final String loggedUserName = "[data-test='nav-menu']";
-    public static final String  emailError = ("[data-test='email-error']");
-    public static final String  passwordError = ("[data-test='password-error']");
-    public static final String invalidEmailOrPasswordError=("[data-test='login-error']");
+    public static final String emailError = "[data-test='email-error']";
+    public static final String passwordError = "[data-test='password-error']";
+    public static final String invalidEmailOrPasswordError = "[data-test='login-error']";
+
+    public LoginPage(Page page) {
+        super(page);  // Pass page to PlaywrightMethods constructor
+    }
 
 
     public void navigateToLogin() {
@@ -25,5 +29,4 @@ public class LoginPage extends PlaywrightMethods {
         fill(inputPassword, password);
         click(clickLoginButton);
     }
-
 }

@@ -23,8 +23,12 @@ public class BaseTest {
         boolean headless = Boolean.parseBoolean(System.getenv().getOrDefault("CI", "false"));
 
         page = browserManager.open(browser, headless);
-        page.setDefaultTimeout(10000);
+        page.setDefaultTimeout(10000);  // 10 seconds
         page.setDefaultNavigationTimeout(10000);
+
+        // Initialize page objects after page is ready
+        loginPage = new LoginPage(page);
+
         page.navigate(getProp("url"));
         loginPage.navigateToLogin();
     }
@@ -34,11 +38,9 @@ public class BaseTest {
         browserManager.close();
     }
 
-
     protected String getProp(String key) {
         return AddAndUpdatePropertiesFileParameters.loadAndGetPropertyFromPropertiesFile(
                 key, "src/test/resources/Environment.properties"
         );
     }
-
 }
