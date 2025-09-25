@@ -1,14 +1,12 @@
 package ui.tests;
 
 import io.qameta.allure.Story;
-
 import org.testng.Assert;
-import ui.utils.DataSources;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
-import static ui.locators.LoginPage.*;
-
+import ui.locators.LoginPage;
+import ui.utils.DataSources;
+import ui.utils.PlaywrightMethods;
 
 public class LoginTests extends BaseTest {
     @DataProvider(name = "validLogin")
@@ -21,41 +19,48 @@ public class LoginTests extends BaseTest {
         return DataSources.excel("src/test/resources/data/loginTestDataPW.xlsx", "invalidUsers");
     }
 
+    @Test(dataProvider = "validLogin", groups = {"loginCombinations"},
+            description = "Should log in with valid user and password")
     @Story("User logs in with valid credentials")
-    @Test(dataProvider = "validLogin", groups = {"loginCombinations"}, description = "Should log in with valid user and password")
     public void successfulLoginTest(String email, String password, String testScenario) {
-        Assert.assertEquals(getText(loginHeading), "Login");
-        login(email,password);
-        Assert.assertEquals(getText(accountTitle), "My account");
-        Assert.assertEquals(getText(loggedUserName).trim(), "Natasha Kostovska");
+       Assert.assertEquals(loginPage.getText(LoginPage.loginHeading), "Login");
+
+        loginPage.login(email, password);
+
+        Assert.assertEquals(loginPage.getText(LoginPage.accountTitle), "My account");
+        Assert.assertEquals(loginPage.getText(LoginPage.loggedUserName).trim(), "Natasha Kostovska");
+
         System.out.println(testScenario);
     }
 
+    @Test(dataProvider = "invalidLogin", groups = {"loginCombinations"},
+            description = "Should not be able to log in with invalid user, invalid password or combination of both")
     @Story("User logs in with invalid credentials")
-    @Test(dataProvider = "invalidLogin", groups = {"loginCombinations"}, description = "Should not be able to log in with invalid user, invalid password or combination of both")
     public void unsuccessfulLoginWithWrongCredentialsTest(String email, String password, String testScenario) {
-        Assert.assertEquals(getText(loginHeading), "Login");
-        login(email,password);
-        waitTime(2000);
+        loginPage = new LoginPage(page);
 
-// Extract texts if present
-        boolean isEmailErrorVisible = isVisible(emailError);
-        boolean isPasswordErrorVisible = isVisible(passwordError);
-        boolean isInvalidEmailOrPasswordErrorVisible = isVisible(invalidEmailOrPasswordError);
+        Assert.assertEquals(loginPage.getText(LoginPage.loginHeading), "Login");
+
+        loginPage.login(email, password);
+        PlaywrightMethods.waitTime(2000);
+
+        boolean isEmailErrorVisible = loginPage.isVisible(LoginPage.emailError);
+        boolean isPasswordErrorVisible = loginPage.isVisible(LoginPage.passwordError);
+        boolean isInvalidEmailOrPasswordErrorVisible = loginPage.isVisible(LoginPage.invalidEmailOrPasswordError);
 
         if (isEmailErrorVisible) {
-            System.out.println("Email Error: " + getText(emailError));
+            System.out.println("Email Error: " + loginPage.getText(LoginPage.emailError));
+        } else if (isPasswordErrorVisible) {
+            System.out.println("Password Error: " + loginPage.getText(LoginPage.passwordError));
+        } else if (isInvalidEmailOrPasswordErrorVisible) {
+            System.out.println("Invalid email or password: " + loginPage.getText(LoginPage.invalidEmailOrPasswordError));
         }
-        else if (isPasswordErrorVisible) {
-            System.out.println("Password Error: " + getText(passwordError));
-        }
-        else if (isInvalidEmailOrPasswordErrorVisible) {
-            System.out.println("Invalid email or password: " + getText(invalidEmailOrPasswordError));
-        }
-        // Assertion: At least one of them must be visible
-        Assert.assertTrue(isEmailErrorVisible || isPasswordErrorVisible || isInvalidEmailOrPasswordErrorVisible,
-                "Expected at least one validation error, but none appeared.");
+
+        Assert.assertTrue(
+                isEmailErrorVisible || isPasswordErrorVisible || isInvalidEmailOrPasswordErrorVisible,
+                "Expected at least one validation error, but none appeared."
+        );
+
         System.out.println(testScenario);
     }
-
 }

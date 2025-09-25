@@ -1,5 +1,6 @@
 package ui.locators;
 
+import com.microsoft.playwright.Page;
 import ui.utils.PlaywrightMethods;
 
 public class LoginPage extends PlaywrightMethods {
@@ -14,11 +15,15 @@ public class LoginPage extends PlaywrightMethods {
     public static final String  passwordError = ("[data-test='password-error']");
     public static final String invalidEmailOrPasswordError=("[data-test='login-error']");
 
-    public static void navigateToLogin() {
+    public LoginPage(Page page) {
+        super(page);
+    }
+
+    public void navigateToLogin() {
         click(signInNavLink);
     }
 
-    public static void login(String email, String password) {
+    public void login(String email, String password) {
         fill(inputEmail, email);
         fill(inputPassword, password);
         click(clickLoginButton);

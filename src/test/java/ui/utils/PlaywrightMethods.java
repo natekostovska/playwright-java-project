@@ -11,17 +11,19 @@ import com.microsoft.playwright.options.SelectOption;
 import java.nio.file.Paths;
 import java.util.List;
 
-import static ui.tests.BaseTest.page;
-
-
 public class PlaywrightMethods {
     // ========== BASIC LOCATOR ACTIONS ==========
+    private final Page page;
+
+    public PlaywrightMethods(Page page) {
+        this.page = page;
+    }
 
     public Locator locator(String selector) {
         return page.locator(selector);
     }
 
-    public static void click(String selector) {
+    public void click(String selector) {
         page.waitForSelector(selector).click();
     }
 
@@ -29,7 +31,7 @@ public class PlaywrightMethods {
         page.locator(selector).nth(index).click();
     }
 
-    public static void fill(String selector, String value) {
+    public void fill(String selector, String value) {
         page.locator(selector).fill(value);
     }
 
@@ -42,7 +44,7 @@ public class PlaywrightMethods {
         pressEnter(selector);
     }
 
-    public static String getText(String selector) {
+    public String getText(String selector) {
         return page.locator(selector).innerText();
     }
 
@@ -58,11 +60,11 @@ public class PlaywrightMethods {
         page.locator(selector).fill("");
     }
 
-    public static boolean isVisible(String selector) {
+    public  boolean isVisible(String selector) {
         return page.locator(selector).isVisible();
     }
 
-    public static boolean isEnabled(String selector) {
+    public  boolean isEnabled(String selector) {
         return page.locator(selector).isEnabled();
     }
 

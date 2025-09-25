@@ -7,7 +7,14 @@ RUN apt-get update && apt-get install -y openjdk-17-jdk maven curl wget unzip gn
     libxcursor1 libgtk-3-0 libpangocairo-1.0-0 libcairo-gobject2 libgdk-pixbuf-2.0-0 \
     fonts-liberation libayatana-appindicator3-1 xdg-utils maven
 
+ENV CI=true
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+ENV TZ=UTC
+
 WORKDIR /workspace
+
+COPY pom.xml .
+RUN mvn dependency:go-offline
 
 COPY . .
 
@@ -15,8 +22,3 @@ RUN mvn exec:java -Dexec.mainClass="com.microsoft.playwright.CLI" -Dexec.args="i
 
 RUN mvn clean install -DskipTests
 
-ENV CI=true
-ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
-ENV TZ=UTC
-
-CMD ["mvn", "verify"]

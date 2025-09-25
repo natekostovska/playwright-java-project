@@ -11,15 +11,14 @@ import com.microsoft.playwright.Page;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
+import ui.tests.BaseTest;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
 
-import static ui.tests.BaseTest.page;
-
-public class TestListener implements ITestListener {
+public class TestListener extends BaseTest implements ITestListener {
 
     private static ExtentManager ExtentManager;
     private static final ExtentReports extent = ExtentManager.createInstance();

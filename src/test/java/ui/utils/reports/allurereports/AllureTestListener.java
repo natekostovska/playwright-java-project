@@ -12,7 +12,7 @@ import ui.tests.BaseTest;
 import java.io.ByteArrayInputStream;
 import java.util.Date;
 
-public class AllureTestListener  implements ITestListener {
+public class AllureTestListener extends BaseTest implements ITestListener {
 
     public static String getScreenshotName(String methodName) {
         Date d = new Date();
@@ -58,8 +58,6 @@ public class AllureTestListener  implements ITestListener {
         String exceptionMessage = result.getThrowable() != null ? result.getThrowable().getMessage() : "No exception";
 
         Allure.step("Test method " + methodName + " failed. Exception: " + exceptionMessage, Status.FAILED);
-
-        Page page = BaseTest.page;
 
         if (page != null) {
             try {

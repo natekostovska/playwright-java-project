@@ -6,14 +6,14 @@ import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.annotations.*;
 import ui.framework.PlaywrightBrowserManager;
+import ui.locators.LoginPage;
 import ui.utils.AddAndUpdatePropertiesFileParameters;
-
-import static ui.locators.LoginPage.navigateToLogin;
 
 public class BaseTest {
 
     protected PlaywrightBrowserManager browserManager;
-    public static Page page;
+    protected Page page;
+    public LoginPage loginPage;
 
     @BeforeClass(alwaysRun = true)
     public void setupBrowserManager() {
@@ -27,6 +27,7 @@ public class BaseTest {
         boolean headless = Boolean.parseBoolean(System.getenv().getOrDefault("CI", "false"));
 
         page = browserManager.open(browser, headless);
+        loginPage= new LoginPage(page);
         page.navigate(getProp("url"));
         page.waitForLoadState(LoadState.NETWORKIDLE);
 
@@ -37,19 +38,15 @@ public class BaseTest {
         }
 
         else if (containsGroup(groups, "loginCombinations")) {
-            navigateToLogin();
+            loginPage.navigateToLogin();
         }
     }
 
     @AfterMethod(alwaysRun = true)
     public void tearDown() {
-        browserManager.closePageOnly();
-    }
-
-    @AfterClass(alwaysRun = true)
-    public void closeAll() {
         browserManager.close();
     }
+
 
     protected String getProp(String key) {
         return AddAndUpdatePropertiesFileParameters.loadAndGetPropertyFromPropertiesFile(
