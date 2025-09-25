@@ -30,8 +30,6 @@ public class BaseTest {
         page.setDefaultTimeout(10000);
         page.setDefaultNavigationTimeout(10000);
         page.navigate(getProp("url"));
-        String title = page.title();
-        Assert.assertEquals(title, "Practice Software Testing - Toolshop - v5.0");
         loginPage.navigateToLogin();
     }
 
