@@ -14,13 +14,13 @@ The project is integrated with **GitHub Actions** for CI/CD, Docker, and test re
 ## Test Reports
 
 - **Allure Report** (deployed on GitHub Pages)  
-  [![Allure Report](https://github.com/nate338/playwright-java-project/actions/workflows/playwright-ci.yml/badge.svg)](https://nate338.github.io/playwright-java-project/)
+  [![Allure Report](https://img.shields.io/badge/Allure-Report-blue?logo=allure-test-report)](https://nate338.github.io/playwright-java-project/)
 
 - **Extent Report** (artifact from latest workflow run)  
   [![Extent Report](https://img.shields.io/badge/Extent-Report-blue?logo=github)](https://github.com/nate338/playwright-java-project/suites/extent/)
 
 - **TestNG Report** (artifact from latest workflow run)  
-  [![TestNG Report](https://img.shields.io/badge/TestNG-Report-green?logo=github)](https://github.com/nate338/playwright-java-project/suites/testng/)
+  [![TestNG Report](https://img.shields.io/badge/TestNG-Report-green?logo=testng)](https://github.com/nate338/playwright-java-project/suites/testng/)
 
 > Reports are retained for **4 weeks**.
 
@@ -40,7 +40,7 @@ The project is integrated with **GitHub Actions** for CI/CD, Docker, and test re
 ### 1. Clone the repository:
 
 ```bash
-git clone https://github.com/nate338/playwright-java-project.git
+git clone https://github.com/natekostovska/playwright-java-project.git
 cd playwright-java-project
 ```
 ### 2. Build and run tests:
