@@ -2,6 +2,8 @@ package ui.utils;
 
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.*;
+import org.apache.commons.lang3.ArrayUtils;
+
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -15,6 +17,7 @@ public class PlaywrightMethods {
     }
 
     // ========== BASIC LOCATOR ACTIONS ==========
+    Locator pageTitle = page.locator("h1");
 
     public Locator locator(String selector) {
         return page.locator(selector);
@@ -174,5 +177,12 @@ public class PlaywrightMethods {
             Thread.sleep(waitTime);
         } catch (Exception ignored) {
         }
+    }
+
+    public int arrayListToInt(String[] items, String list) {
+        return ArrayUtils.indexOf(items, list);
+    }
+    public String getTitleName() {
+        return getText(String.valueOf(pageTitle));
     }
 }

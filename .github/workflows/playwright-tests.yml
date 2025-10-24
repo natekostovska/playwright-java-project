@@ -1,6 +1,10 @@
 name: Playwright Tests
 
 on:
+  workflow_run:
+    workflows: [ "Build and Push Playwright Docker Image" ]
+    types:
+      - completed
   push:
     branches: [main, master]
   pull_request:
@@ -10,6 +14,8 @@ jobs:
   playwright:
     name: Playwright Tests
     runs-on: ubuntu-latest
+    # Only run if the build workflow succeeded (avoid wasted runs)
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     container:
       image: nate338/playwright-java:latest
       credentials:
@@ -34,25 +40,34 @@ jobs:
         run: |
             echo "Generating Allure report..."
             mvn allure:report
-            ls -l allure/reports
+            ls -l allure/reports || echo "No allure reports found."
 
       - name: Upload Allure report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: allure-report
+          name: allure-report-${{ github.run_number }}
           path: allure/reports
 
       - name: Upload ExtentReports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: extent-reports
+          name: extent-reports-${{ github.run_number }}
           path: extent
 
       - name: Upload TestNG Reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4-${{ github.run_number }}
         with:
           name: testng-reports
           path: target/surefire-reports
+
+      # Allure report to GitHub Pages
+      - name: Deploy Allure report to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: allure/reports
+          publish_branch: gh-pages
