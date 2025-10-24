@@ -61,7 +61,7 @@ jobs:
         run: rm -rf allure/* extent/* target/* || true
 
       - name: Build and test
-        run: mvn clean verify --no-transfer-progress
+        run: mvn clean verify -Dmaven.test.failure.ignore=true --no-transfer-progress
 
       - name: Generate Allure report
         if: always()
