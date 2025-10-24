@@ -14,8 +14,6 @@ jobs:
   playwright:
     name: Playwright Tests
     runs-on: ubuntu-latest
-    # Only run if the build workflow succeeded (avoid wasted runs)
-    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     container:
       image: nate338/playwright-java:latest
       credentials:
@@ -24,46 +22,53 @@ jobs:
       options: --user root
 
     steps:
+      # Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Clean up old reports
       - name: Cleanup previous reports
         run: |
           echo "Cleaning previous reports..."
           rm -rf allure/* extent/* target/* || true  
 
+      # Build and run tests
       - name: Build and test
         run: mvn clean verify --no-transfer-progress
 
+      # Generate Allure report
       - name: Generate Allure report
         if: always()
         run: |
-            echo "Generating Allure report..."
-            mvn allure:report
-            ls -l allure/reports || echo "No allure reports found."
+          echo "Generating Allure report..."
+          mvn allure:report
+          ls -l allure/reports
 
+      # Upload Allure report as artifact
       - name: Upload Allure report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: allure-report-${{ github.run_number }}
+          name: allure-report
           path: allure/reports
 
+      # Upload ExtentReports as artifact
       - name: Upload ExtentReports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: extent-reports-${{ github.run_number }}
+          name: extent-reports
           path: extent
 
+      # Upload TestNG reports as artifact
       - name: Upload TestNG Reports
         if: always()
-        uses: actions/upload-artifact@v4-${{ github.run_number }}
+        uses: actions/upload-artifact@v4
         with:
           name: testng-reports
           path: target/surefire-reports
 
-      # Allure report to GitHub Pages
+      # Deploy Allure report to GitHub Pages
       - name: Deploy Allure report to GitHub Pages
         if: always()
         uses: peaceiris/actions-gh-pages@v4
@@ -71,3 +76,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: allure/reports
           publish_branch: gh-pages
+          destination_dir: run-${{ github.event.workflow_run.run_number }}
