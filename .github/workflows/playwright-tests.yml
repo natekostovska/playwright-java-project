@@ -65,7 +65,10 @@ jobs:
 
       - name: Generate Allure report
         if: always()
-        run: mvn allure:report
+        run: |
+         echo "Generating Allure report..."
+         mvn allure:report
+         ls -l allure/reports
 
       - name: Upload Allure report
         if: always()
