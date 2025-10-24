@@ -37,24 +37,24 @@ The project is integrated with **GitHub Actions** for CI/CD, Docker, and test re
 
 ## How to Run Locally
 
-1. Clone the repository:
+### 1. Clone the repository:
 
 ```bash
 git clone https://github.com/nate338/playwright-java-project.git
 cd playwright-java-project
 ```
-2. Build and run tests:
+### 2. Build and run tests:
 ```bash
 mvn clean verify
 ```
-3. Generate Allure report:
+### 3. Generate Allure report:
 ```bash
 mvn allure:report
 ```
-4. Open allure report in browser
+### 4. Open allure report in browser
 ```bash
 mvn allure:serve
 ```
-5. Download allure report from git
+### 5. Download allure report from git
  - Extract zip file open the report by cmd -> allure open path of your report
  - Exit by CTRL + C
