@@ -101,7 +101,7 @@ jobs:
         if: always()
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GHCR_PAT }}
           publish_dir: ./allure/reports
           publish_branch: gh-pages
           user_name: github-actions
