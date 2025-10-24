@@ -8,30 +8,34 @@ on:
 
 jobs:
   build-and-push-docker:
-    name: Build & Push Docker Image
+    name: Build & Push Docker Image (if needed)
     runs-on: ubuntu-latest
-    if: contains(github.event.head_commit.message, 'Dockerfile') || contains(github.event.head_commit.message, 'pom.xml')
     outputs:
-      docker_built: ${{ steps.set-output.outputs.built }}
+      docker_tag: ${{ steps.set-output.outputs.docker_tag }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set output to indicate Docker was built
+      - name: Check if Dockerfile or pom.xml changed
+        id: check-changes
+        run: |
+          files=$(git diff --name-only ${{ github.sha }} ${{ github.sha }}~1)
+          echo "Changed files: $files"
+          if echo "$files" | grep -qE 'Dockerfile|pom.xml'; then
+            echo "Docker needs build"
+            echo "docker_tag=latest" >> $GITHUB_OUTPUT
+          else
+            echo "No Docker changes"
+            echo "docker_tag=" >> $GITHUB_OUTPUT
+          fi
         id: set-output
-        run: echo "built=true" >> $GITHUB_OUTPUT
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Build Docker image
-        run: docker build -t nate338/playwright-java:latest .
-
-      - name: Push Docker image
-        run: docker push nate338/playwright-java:latest
+      - name: Build and push Docker image
+        if: steps.set-output.outputs.docker_tag == 'latest'
+        run: |
+          echo "Building and pushing Docker image..."
+          docker build -t nate338/playwright-java:latest .
+          docker push nate338/playwright-java:latest
 
   playwright-tests:
     name: Playwright Tests
@@ -39,11 +43,12 @@ jobs:
     container:
       image: nate338/playwright-java:latest
       options: --user root
-      pull: true
-    needs: ${{ github.event.head_commit.message contains 'Dockerfile' || github.event.head_commit.message contains 'pom.xml' && 'build-and-push-docker' || '' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Pull latest Docker image
+        run: docker pull nate338/playwright-java:latest || true
 
       - name: Cleanup previous reports
         run: rm -rf allure/* extent/* target/* || true
