@@ -7,11 +7,12 @@ on:
     branches: [main, master]
 
 jobs:
+  # Job 1: Build Docker image if needed
   build-and-push-docker:
     name: Build & Push Docker Image (if needed)
     runs-on: ubuntu-latest
     outputs:
-      docker_tag: ${{ steps.set-output.outputs.docker_tag }}
+      docker_built: ${{ steps.check-changes.outputs.docker_built }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -23,23 +24,24 @@ jobs:
           echo "Changed files: $files"
           if echo "$files" | grep -qE 'Dockerfile|pom.xml'; then
             echo "Docker needs build"
-            echo "docker_tag=latest" >> $GITHUB_OUTPUT
+            echo "docker_built=true" >> $GITHUB_OUTPUT
           else
             echo "No Docker changes"
-            echo "docker_tag=" >> $GITHUB_OUTPUT
-          fi
-        id: set-output
+            echo "docker_built=false" >> $GITHUB_OUTPUT
 
       - name: Build and push Docker image
-        if: steps.set-output.outputs.docker_tag == 'latest'
+        if: steps.check-changes.outputs.docker_built == 'true'
         run: |
           echo "Building and pushing Docker image..."
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker build -t nate338/playwright-java:latest .
           docker push nate338/playwright-java:latest
 
+  # Job 2: Run Playwright tests
   playwright-tests:
     name: Playwright Tests
     runs-on: ubuntu-latest
+    needs: build-and-push-docker
     container:
       image: nate338/playwright-java:latest
       options: --user root
@@ -47,8 +49,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Pull latest Docker image
-        run: docker pull nate338/playwright-java:latest || true
+      - name: Pull latest Docker image if rebuilt
+        if: needs.build-and-push-docker.outputs.docker_built == 'true'
+        run: docker pull nate338/playwright-java:latest
 
       - name: Cleanup previous reports
         run: rm -rf allure/* extent/* target/* || true
