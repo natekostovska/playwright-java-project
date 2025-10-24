@@ -2,9 +2,12 @@ name: Playwright CI
 
 on:
   push:
-    branches: [main, master]
+    branches: ['**'] # Trigger on any branch push
   pull_request:
-    branches: [main, master]
+    branches: ['**'] # Trigger on any pull request
+  schedule:
+    - cron: '0 0 * * *' # Scheduled daily at midnight UTC
+  workflow_dispatch:   # Manual trigger
 
 jobs:
   build-and-push-docker:
@@ -76,6 +79,7 @@ jobs:
         with:
           name: allure-report
           path: allure/reports
+          retention-days: 28
 
       - name: Upload ExtentReports
         if: always()
@@ -83,6 +87,7 @@ jobs:
         with:
           name: extent-reports
           path: extent
+          retention-days: 28
 
       - name: Upload TestNG Reports
         if: always()
@@ -90,3 +95,16 @@ jobs:
         with:
           name: testng-reports
           path: target/surefire-reports
+          retention-days: 28
+
+      - name: Deploy Allure report to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v6
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./allure/reports
+          publish_branch: gh-pages
+          user_name: github-actions
+          user_email: github-actions@github.com
+          retain_days: 28
+
