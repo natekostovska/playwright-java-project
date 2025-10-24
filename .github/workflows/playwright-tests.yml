@@ -1,22 +1,10 @@
 name: Playwright Tests
 
 on:
-  workflow_run:
-    workflows: ["Build & Push Docker Image"]
-    types:
-      - completed
   push:
     branches: [main, master]
-    paths:
-      - '**/*.java'
-      - '**/*.groovy'
-      - '**/src/**'
   pull_request:
     branches: [main, master]
-    paths:
-      - '**/*.java'
-      - '**/*.groovy'
-      - '**/src/**'
 
 jobs:
   playwright-tests:
