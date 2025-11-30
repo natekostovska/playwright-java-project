@@ -17,7 +17,7 @@ public class PlaywrightMethods {
     }
 
     // ========== BASIC LOCATOR ACTIONS ==========
-    Locator pageTitle = page.locator("h1");
+//    Locator pageTitle = page.locator("h1");
 
     public Locator locator(String selector) {
         return page.locator(selector);
@@ -182,7 +182,7 @@ public class PlaywrightMethods {
     public int arrayListToInt(String[] items, String list) {
         return ArrayUtils.indexOf(items, list);
     }
-    public String getTitleName() {
+ /*   public String getTitleName() {
         return getText(String.valueOf(pageTitle));
-    }
+    }*/
 }

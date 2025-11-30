@@ -1,6 +1,7 @@
 package ui.tests;
 
 import com.microsoft.playwright.Page;
+import org.testng.Assert;
 import org.testng.annotations.*;
 import ui.framework.PlaywrightBrowserManager;
 import ui.locators.LoginPage;
@@ -30,7 +31,26 @@ public class BaseTest {
         loginPage = new LoginPage(page);
 
         page.navigate(getProp("url"));
+        String title= page.title();
+        System.out.println("Page Title: " + title);
+        Assert.assertTrue(title.contains("Practice Software Testing"));
         loginPage.navigateToLogin();
+    }
+
+    @BeforeMethod()
+    public void setUpForAll() {
+        String browser = getProp("browser");
+        boolean headless = Boolean.parseBoolean(System.getenv().getOrDefault("CI", "false"));
+
+        page = browserManager.open(browser, headless);
+        page.setDefaultTimeout(10000);  // 10 seconds
+        page.setDefaultNavigationTimeout(10000);
+
+        page.navigate(getProp("url"));
+        String title= page.title();
+        System.out.println("Page Title: " + title);
+        Assert.assertTrue(title.contains("Practice Software Testing"));
+
     }
 
     @AfterMethod(alwaysRun = true)

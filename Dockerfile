@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
 # Set environment variables
 ENV CI=true
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
-ENV TZ=UTC
+ENV TZ=Europe/Skopje
 
 # Set working directory
 WORKDIR /workspace

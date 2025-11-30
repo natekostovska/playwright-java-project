@@ -6,12 +6,12 @@ import java.util.Arrays;
 
 @Getter
 public class PlaywrightBrowserManager {
-    private Playwright playwright;
-    private Browser browser;
-    private BrowserContext context;
-    private Page page;
+    private static Playwright playwright;
+    private static Browser browser;
+    private static BrowserContext context;
+    private static Page page;
 
-    public Page open(String browserName, boolean headless) {
+    public static Page open(String browserName, boolean headless) {
         playwright = Playwright.create();
 
         switch (browserName.toLowerCase()) {
@@ -43,18 +43,19 @@ public class PlaywrightBrowserManager {
                 throw new IllegalArgumentException("Unsupported browser: " + browserName);
         }
 
+        playwright.selectors().setTestIdAttribute("data-test");
         context = browser.newContext(new Browser.NewContextOptions().setViewportSize(null));
 
         page = context.newPage();
         return page;
     }
 
-    public void closePageOnly() {
+    public static void closePageOnly() {
         if (page != null) page.close();
         if (context != null) context.close();
     }
 
-    public void close() {
+    public static void close() {
         closePageOnly();
         if (browser != null) browser.close();
         if (playwright != null) playwright.close();
