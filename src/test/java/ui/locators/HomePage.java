@@ -8,58 +8,50 @@ import static ui.utils.StaticVariables.HOME_SUBMENU_ITEMS;
 
 public class HomePage extends PlaywrightMethods {
 
-    private final Page page;
-
     public HomePage(Page page) {
         super(page);
-        this.page = page;
     }
 
-    private final String signIn = ".login";
-    private final String contactUs = "text=Contact us";
-    private final String search = "#search_query_top";
-    private final String account = ".account";
-    private final String menuItems = "div#block_top_menu > ul > li";
-    private final String submenuItem = "ul.submenu > li > a";
+    public static final String SIGN_IN = ".login";
+    public static final String CONTACT_US = "text=Contact us";
+    public static final String SEARCH = "#search_query_top";
+    public static final String ACCOUNT = ".account";
+    public static final String MENU_ITEMS = "div#block_top_menu > ul > li";
+    public static final String SUBMENU_ITEM = "ul.submenu > li > a";
 
     public void clickSignIn() {
-        click(signIn);
+        click(SIGN_IN);
     }
 
     public void clickContactUs() {
-        click(contactUs);
+        click(CONTACT_US);
     }
 
     public void searchItems(String searchItem) {
-        fill(search, searchItem);
-        pressEnter(search);
+        fill(SEARCH, searchItem);
+        pressEnter(SEARCH);
     }
 
     public void clickWhenLoggedIn() {
-        click(account);
+        click(ACCOUNT);
     }
 
     public void hoverOverMenuItem(String menu) {
-        scrollIntoView(menuItems);
+        scrollIntoView(MENU_ITEMS);
         int index = arrayListToInt(HOME_PAGE_MENU_ITEMS, menu);
-        hover(menuItems, index);
+        hover(MENU_ITEMS, index);
     }
 
     public void clickMenuItem(String menu) {
-        scrollIntoView(menuItems);
+        scrollIntoView(MENU_ITEMS);
         int index = arrayListToInt(HOME_PAGE_MENU_ITEMS, menu);
-        click(menuItems, index);
+        click(MENU_ITEMS, index);
     }
 
     public void clickToChooseSubmenuItem(String menu, String submenu) {
         hoverOverMenuItem(menu);
         int index = arrayListToInt(HOME_SUBMENU_ITEMS, submenu);
-        hover(submenuItem, index);
-        click(submenuItem, index);
-    }
-
-    // Utility: Hover by index
-    private void hover(String selector, int index) {
-        page.locator(selector).nth(index).hover();
+        hover(SUBMENU_ITEM, index);
+        click(SUBMENU_ITEM, index);
     }
 }

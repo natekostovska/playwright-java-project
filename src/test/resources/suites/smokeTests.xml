@@ -9,11 +9,10 @@
         <groups>
             <run>
                 <include name="smoke"/>
-                <include name="loginCombinations"/>
             </run>
         </groups>
         <classes>
-            <class name="ui.tests.LoginTests"/>
+            <class name="ui.tests.ContactPageTests"/>
         </classes>
     </test>
 </suite>

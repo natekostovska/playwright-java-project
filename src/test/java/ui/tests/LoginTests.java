@@ -5,59 +5,79 @@ import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import ui.utils.DataSources;
-import ui.utils.PlaywrightMethods;
 
 import static ui.locators.LoginPage.*;
 
 public class LoginTests extends BaseTest {
+
     @DataProvider(name = "validLogin")
     public Object[][] validUsers() {
-        return DataSources.excel("src/test/resources/data/loginTestDataPW.xlsx", "validUsers");
+        return DataSources.excel(
+                "src/test/resources/data/loginTestDataPW.xlsx",
+                "validUsers"
+        );
     }
 
     @DataProvider(name = "invalidLogin")
     public Object[][] invalidUsers() {
-        return DataSources.excel("src/test/resources/data/loginTestDataPW.xlsx", "invalidUsers");
+        return DataSources.excel(
+                "src/test/resources/data/loginTestDataPW.xlsx",
+                "invalidUsers"
+        );
     }
 
-    @Test(dataProvider = "validLogin", groups = {"loginCombinations"},
-            description = "Should log in with valid user and password")
+    @Test(
+            dataProvider = "validLogin",
+            groups = {"loginCombinations"},
+            description = "Should log in with valid user and password"
+    )
     @Story("User logs in with valid credentials")
     public void successfulLoginTest(String email, String password, String testScenario) {
-       Assert.assertEquals(loginPage.getText(loginHeading), "Login");
 
-        loginPage.login(email, password);
+        pages.getLoginPage().navigateToLogin();
 
-        Assert.assertEquals(loginPage.getText(accountTitle), "My account");
-        Assert.assertEquals(loginPage.getText(loggedUserName).trim(), "Natasha Kostovska");
+        Assert.assertTrue(
+                pages.getLoginPage().isVisible(loginHeading), "Login page is not visible"
+        );
+
+        pages.getLoginPage().login(email, password);
+
+        Assert.assertEquals(
+                pages.getLoginPage().getText(accountTitle),
+                "My account","Account title mismatch"
+        );
+
+        Assert.assertTrue(
+                pages.getLoginPage().getText(loggedUserName)
+                        .contains("Natasha Kostovska"), "Logged-in user name mismatch"
+        );
 
         System.out.println(testScenario);
     }
 
-    @Test(dataProvider = "invalidLogin", groups = {"loginCombinations"},
-            description = "Should not be able to log in with invalid user, invalid password or combination of both")
+    @Test(
+            dataProvider = "invalidLogin",
+            groups = {"loginCombinations"},
+            description = "Should not be able to log in with invalid credentials"
+    )
     @Story("User logs in with invalid credentials")
-    public void unsuccessfulLoginWithWrongCredentialsTest(String email, String password, String testScenario) {
-         Assert.assertEquals(loginPage.getText(loginHeading), "Login");
+    public void unsuccessfulLoginTest(
+            String email,
+            String password,
+            String testScenario) {
 
-        loginPage.login(email, password);
-        PlaywrightMethods.waitTime(2000);
-
-        boolean isEmailErrorVisible = loginPage.isVisible(emailError);
-        boolean isPasswordErrorVisible = loginPage.isVisible(passwordError);
-        boolean isInvalidEmailOrPasswordErrorVisible = loginPage.isVisible(invalidEmailOrPasswordError);
-
-        if (isEmailErrorVisible) {
-            System.out.println("Email Error: " + loginPage.getText(emailError));
-        } else if (isPasswordErrorVisible) {
-            System.out.println("Password Error: " + loginPage.getText(passwordError));
-        } else if (isInvalidEmailOrPasswordErrorVisible) {
-            System.out.println("Invalid email or password: " + loginPage.getText(invalidEmailOrPasswordError));
-        }
+        pages.getLoginPage().navigateToLogin();
 
         Assert.assertTrue(
-                isEmailErrorVisible || isPasswordErrorVisible || isInvalidEmailOrPasswordErrorVisible,
-                "Expected at least one validation error, but none appeared."
+                pages.getLoginPage().isVisible(loginHeading),"Login page is not visible"
+        );
+
+        pages.getLoginPage().login(email, password);
+
+        pages.getLoginPage().waitForLoginError();
+
+        Assert.assertTrue(
+                pages.getLoginPage().isLoginErrorVisible(), "Login error message was not visible"
         );
 
         System.out.println(testScenario);

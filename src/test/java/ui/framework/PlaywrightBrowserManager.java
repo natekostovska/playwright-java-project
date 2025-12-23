@@ -6,12 +6,12 @@ import java.util.Arrays;
 
 @Getter
 public class PlaywrightBrowserManager {
-    private static Playwright playwright;
-    private static Browser browser;
-    private static BrowserContext context;
-    private static Page page;
+    private  Playwright playwright;
+    private  Browser browser;
+    private  BrowserContext context;
+    private  Page page;
 
-    public static Page open(String browserName, boolean headless) {
+    public Page open(String browserName, boolean headless) {
         playwright = Playwright.create();
 
         switch (browserName.toLowerCase()) {
@@ -50,12 +50,12 @@ public class PlaywrightBrowserManager {
         return page;
     }
 
-    public static void closePageOnly() {
+    public void closePageOnly() {
         if (page != null) page.close();
         if (context != null) context.close();
     }
 
-    public static void close() {
+    public void close() {
         closePageOnly();
         if (browser != null) browser.close();
         if (playwright != null) playwright.close();

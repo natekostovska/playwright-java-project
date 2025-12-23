@@ -4,6 +4,9 @@ import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.*;
 import org.apache.commons.lang3.ArrayUtils;
 
+import java.io.FileNotFoundException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -11,27 +14,28 @@ public class PlaywrightMethods {
 
     protected Page page;
 
-    // Constructor to initialize page
     public PlaywrightMethods(Page page) {
         this.page = page;
     }
 
-    // ========== BASIC LOCATOR ACTIONS ==========
-//    Locator pageTitle = page.locator("h1");
+     // ========= BASIC ACTIONS =========
 
     public Locator locator(String selector) {
         return page.locator(selector);
     }
 
     public void click(String selector) {
-        page.waitForSelector(selector).click();
+        waitForElement(selector);  // Wait until the element is available before clicking
+        page.locator(selector).click();
     }
 
     public void click(String selector, int index) {
+        waitForElement(selector);  // Wait until the element is available before clicking
         page.locator(selector).nth(index).click();
     }
 
     public void fill(String selector, String value) {
+        waitForElement(selector);  // Wait until the element is available before clicking
         page.locator(selector).fill(value);
     }
 
@@ -39,150 +43,102 @@ public class PlaywrightMethods {
         page.locator(selector).press("Enter");
     }
 
-    public void fillAndPressEnter(String selector, String value) {
-        fill(selector, value);
-        pressEnter(selector);
-    }
-
     public String getText(String selector) {
+        waitForElement(selector);  // Wait until the element is available to retrieve text
         return page.locator(selector).innerText();
-    }
-
-    public String getText(String selector, int index) {
-        return page.locator(selector).nth(index).innerText();
-    }
-
-    public List<String> getAllTexts(String selector) {
-        return page.locator(selector).allInnerTexts();
-    }
-
-    public void clear(String selector) {
-        page.locator(selector).fill("");
     }
 
     public boolean isVisible(String selector) {
         return page.locator(selector).isVisible();
     }
 
-    public boolean isEnabled(String selector) {
-        return page.locator(selector).isEnabled();
+    // Improved visibility check with a retry mechanism
+    public boolean isVisibleWithRetry(String selector, int retries, int delay) {
+        for (int i = 0; i < retries; i++) {
+            if (isVisible(selector)) {
+                return true;
+            }
+            waitTime(delay);
+        }
+        return false;
     }
 
-    public boolean isDisabled(String selector) {
-        return !isEnabled(selector);
-    }
-
-    // ========== MOUSE ACTIONS ==========
-
-    public void doubleClick(String selector) {
-        page.locator(selector).dblclick();
-    }
-
-    public void rightClick(String selector) {
-        page.locator(selector).click(new Locator.ClickOptions().setButton(MouseButton.RIGHT));
-    }
-
-    public void hover(String selector) {
-        page.locator(selector).hover();
-    }
-
-    public void scrollIntoView(String selector) {
-        page.locator(selector).scrollIntoViewIfNeeded();
-    }
-
-    // ========== SELECT (Dropdown) ==========
+    // ========= SELECT =========
 
     public void selectByVisibleText(String selector, String visibleText) {
+        waitForElement(selector);  // Wait until the element is available to select
         page.locator(selector).selectOption(new SelectOption().setLabel(visibleText));
     }
 
     public void selectByValue(String selector, String value) {
-        page.locator(selector).selectOption(value);
+        waitForElement(selector);  // Wait until the element is available to select
+        page.locator(selector).selectOption(new SelectOption().setValue(value));
     }
 
     public void selectByIndex(String selector, int index) {
-        String optionValue = page.locator(selector + " option").nth(index).getAttribute("value");
-        page.locator(selector).selectOption(optionValue);
+        waitForElement(selector);  // Wait until the element is available to select
+        page.locator(selector).selectOption(new SelectOption().setIndex(index));
     }
 
-    // ========== ALERTS ==========
+    // ========= FILE UPLOAD =========
 
-    public String handleAlertAndAccept() {
-        final String[] alertText = new String[1];
-        page.onceDialog(dialog -> {
-            alertText[0] = dialog.message();
-            dialog.accept();
-        });
-        return alertText[0];
-    }
-
-    public String handleAlertAndDismiss() {
-        final String[] alertText = new String[1];
-        page.onceDialog(dialog -> {
-            alertText[0] = dialog.message();
-            dialog.dismiss();
-        });
-        return alertText[0];
-    }
-
-    // ========== TABS ==========
-
-    public Page switchToNewTab() {
-        BrowserContext context = page.context();
-        Page newTab = context.waitForPage(() -> {
-            // Trigger opening of new tab/window
-        });
-        return newTab;
-    }
-
-    // ========== FRAMES ==========
-
-    public Frame getFrameByName(String name) {
-        return page.frame(name);
-    }
-
-    public Frame getFrameByIndex(int index) {
-        return page.frames().get(index);
-    }
-
-    public void switchToMainFrame() {
-        // Not needed in Playwright, use frame/page directly
-    }
-
-    // ========== FILE UPLOAD ==========
-
-    public void uploadFile(String selector, String filePath) {
-        page.setInputFiles(selector, Paths.get(filePath));
-    }
-
-    // ========== SLIDERS / DRAG & DROP ==========
-
-    public void dragAndDrop(String sourceSelector, String targetSelector) {
-        page.dragAndDrop(sourceSelector, targetSelector);
-    }
-
-    public void dragAndDropOffset(String selector, int x, int y) {
-        Locator locator = page.locator(selector);
-        BoundingBox box = locator.boundingBox();
-        if (box != null) {
-            page.mouse().move(box.x + box.width / 2, box.y + box.height / 2);
-            page.mouse().down();
-            page.mouse().move(box.x + x, box.y + y);
-            page.mouse().up();
+    public void uploadFileFromResources(String selector, String resourcePath) throws Exception {
+        Path filePath = Paths.get(ClassLoader.getSystemResource(resourcePath).toURI());
+        if (!Files.exists(filePath)) {
+            throw new FileNotFoundException("File not found: " + resourcePath);
         }
+        page.setInputFiles(selector, filePath);
     }
 
-    public static void waitTime(int waitTime) {
+    // Scroll element into view
+    public void scrollIntoView(String selector) {
+        page.locator(selector).scrollIntoViewIfNeeded();
+    }
+
+    public void hover(String selector, int index) {
+        page.locator(selector).nth(index).hover();
+    }
+
+    // ========== HELPER METHODS =========
+
+    // Wait for element to be present before performing an action
+    public void waitForElement(String selector) {
+        page.locator(selector).waitFor(new Locator.WaitForOptions().setTimeout(5000));
+    }
+
+    // Wait for element visibility with a custom timeout
+    public void waitForElementVisible(String selector, int timeoutInMillis) {
+        page.locator(selector).waitFor(new Locator.WaitForOptions().setTimeout(timeoutInMillis).setState(WaitForSelectorState.VISIBLE));
+    }
+
+    // Wait for element to become visible or interactable (useful for handling dynamic content)
+    public void waitForElementInteractable(String selector, int timeoutInMillis) {
+        page.locator(selector).waitFor(new Locator.WaitForOptions().setTimeout(timeoutInMillis).setState(WaitForSelectorState.ATTACHED));
+    }
+
+    // ========== ARRAY UTILITIES =========
+
+    // Convert an array value to its index
+    public int arrayListToInt(String[] items, String value) {
+        int index = ArrayUtils.indexOf(items, value);
+        if (index == -1) {
+            throw new IllegalArgumentException("Value not found in the list: " + value);
+        }
+        return index;
+    }
+
+    // ========= WAIT TIME =========
+
+    // Wait for a specific amount of time (in milliseconds)
+    public static void waitTime(int milliseconds) {
         try {
-            Thread.sleep(waitTime);
-        } catch (Exception ignored) {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
-    public int arrayListToInt(String[] items, String list) {
-        return ArrayUtils.indexOf(items, list);
-    }
- /*   public String getTitleName() {
-        return getText(String.valueOf(pageTitle));
-    }*/
 }
+
+
+

@@ -86,4 +86,18 @@ public class AllureTestListener extends BaseTest implements ITestListener {
     public void onFinish(ITestContext context) {
         System.out.println("Test suite finished: " + context.getName());
     }
+        /**
+     * Attach a video file to the Allure report.
+     */
+    public void addVideoToAllure(String videoPath) {
+        try {
+            // Attach the video as an MP4 file to the report
+            Allure.addAttachment("Test Video", "video/mp4", videoPath);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // If video attachment fails, add a fallback message
+            Allure.addAttachment("Test failed. Cannot attach video.", "text/plain", "No video captured.");
+        }
+    }
+
 }
