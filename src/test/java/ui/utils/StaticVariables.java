@@ -27,9 +27,6 @@ public class StaticVariables {
     public static String fakePhoneNumber = faker.phoneNumber().cellPhone();
     public static String fakeAlias = faker.address().streetAddress() + "," + faker.address().streetAddressNumber();
 
-    // Predefined registered user for testing
-    public static final String EMAIL_FOR_REGISTERED_USER = "nate@test.com";
-    public static final String PASSWORD_FOR_REGISTERED_USER = "123456789";
 
     // Page titles and messages
     public static final String ALREADY_REGISTERED_TITLE = "ALREADY REGISTERED?";

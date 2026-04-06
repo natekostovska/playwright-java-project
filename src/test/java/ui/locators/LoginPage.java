@@ -23,13 +23,13 @@ public class LoginPage extends PlaywrightMethods {
     }
 
     public void navigateToLogin() {
-        click(signInNavLink);
+        clickNthElement(signInNavLink);
     }
 
     public void login(String email, String password) {
         fill(inputEmail, email);
         fill(inputPassword, password);
-        click(clickLoginButton);
+        clickNthElement(clickLoginButton);
     }
 
     public boolean isLoginErrorVisible() {

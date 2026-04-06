@@ -20,11 +20,11 @@ public class HomePage extends PlaywrightMethods {
     public static final String SUBMENU_ITEM = "ul.submenu > li > a";
 
     public void clickSignIn() {
-        click(SIGN_IN);
+        clickNthElement(SIGN_IN);
     }
 
     public void clickContactUs() {
-        click(CONTACT_US);
+        clickNthElement(CONTACT_US);
     }
 
     public void searchItems(String searchItem) {
@@ -33,7 +33,7 @@ public class HomePage extends PlaywrightMethods {
     }
 
     public void clickWhenLoggedIn() {
-        click(ACCOUNT);
+        clickNthElement(ACCOUNT);
     }
 
     public void hoverOverMenuItem(String menu) {
@@ -45,13 +45,13 @@ public class HomePage extends PlaywrightMethods {
     public void clickMenuItem(String menu) {
         scrollIntoView(MENU_ITEMS);
         int index = arrayListToInt(HOME_PAGE_MENU_ITEMS, menu);
-        click(MENU_ITEMS, index);
+        clickNthElement(MENU_ITEMS, index);
     }
 
     public void clickToChooseSubmenuItem(String menu, String submenu) {
         hoverOverMenuItem(menu);
         int index = arrayListToInt(HOME_SUBMENU_ITEMS, submenu);
         hover(SUBMENU_ITEM, index);
-        click(SUBMENU_ITEM, index);
+        clickNthElement(SUBMENU_ITEM, index);
     }
 }

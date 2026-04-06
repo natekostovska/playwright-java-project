@@ -8,7 +8,6 @@ import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 
 public class PlaywrightMethods {
 
@@ -24,12 +23,12 @@ public class PlaywrightMethods {
         return page.locator(selector);
     }
 
-    public void click(String selector) {
+    public void clickNthElement(String selector) {
         waitForElement(selector);  // Wait until the element is available before clicking
         page.locator(selector).click();
     }
 
-    public void click(String selector, int index) {
+    public void clickNthElement(String selector, int index) {
         waitForElement(selector);  // Wait until the element is available before clicking
         page.locator(selector).nth(index).click();
     }

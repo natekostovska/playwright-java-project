@@ -12,7 +12,7 @@ import ui.tests.BaseTest;
 import java.io.ByteArrayInputStream;
 import java.util.Date;
 
-public class AllureTestListener extends BaseTest implements ITestListener {
+public class  AllureTestListener extends BaseTest implements ITestListener {
 
     public static String getScreenshotName(String methodName) {
         Date d = new Date();

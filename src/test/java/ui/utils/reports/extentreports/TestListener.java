@@ -60,7 +60,7 @@ public class TestListener extends BaseTest implements ITestListener {
         String methodName = result.getMethod().getMethodName();
         String exception = result.getThrowable() != null ? result.getThrowable().toString() : "No Exception";
 
-        extentTest.get().fail("<details><summary><b><font color=red>Exception Occurred, click to expand</font></b></summary>"
+        extentTest.get().fail("<details><summary><b><font color=red>Exception Occurred, clickNthElement to expand</font></b></summary>"
                 + exception.replaceAll(",", "<br>") + "</details> \n");
 
         // Capture and attach Playwright screenshot

@@ -9,13 +9,13 @@ import java.util.stream.Collectors;
 
 import static ui.utils.StaticVariables.CONTACT_SUBJECTS;
 
-public class ContactPageTests extends BaseTest{
+public class ContactPageTests extends BaseTest {
     @DataProvider(name = "contactFormDataProvider")
     public Object[][] contactFormDataProvider() {
         return new Object[][]{
                 // Single-field errors
-                {"", "Kostovska", "natasha_test@mailinator.com", "The uploaded file must be a valid .txt text file and must be empty (0 KB) to proceed.",CONTACT_SUBJECTS[4], "data/uploadFileSample.txt", new String[]{"First name is required"}},
-                {"Natasha", "", "natasha_test@mailinator.com", "The uploaded file must be a valid .txt text file and must be empty (0 KB) to proceed.",CONTACT_SUBJECTS[3], "data/uploadFileSample.txt", new String[]{"Last name is required"}},
+                {"", "Kostovska", "natasha_test@mailinator.com", "The uploaded file must be a valid .txt text file and must be empty (0 KB) to proceed.", CONTACT_SUBJECTS[4], "data/uploadFileSample.txt", new String[]{"First name is required"}},
+                {"Natasha", "", "natasha_test@mailinator.com", "The uploaded file must be a valid .txt text file and must be empty (0 KB) to proceed.", CONTACT_SUBJECTS[3], "data/uploadFileSample.txt", new String[]{"Last name is required"}},
                 {"Natasha", "Kostovska", "", "The uploaded file must be a .txt and 0 KB in size.", CONTACT_SUBJECTS[2], "data/uploadFileSample.txt", new String[]{"Email is required"}},
                 {"Natasha", "Kostovska", "natasha_test@mailinator.com", "The uploaded file must be a valid .txt text file and must be empty (0 KB) to proceed.", "", "data/uploadFileSample.txt", new String[]{"Subject is required"}},
                 {"Natasha", "Kostovska", "natasha_test@mailinator.com", "", CONTACT_SUBJECTS[1], "data/uploadFileSample.txt", new String[]{"Message is required"}},
@@ -43,11 +43,12 @@ public class ContactPageTests extends BaseTest{
                         "natePWmailinatoThehemessageieldmustnotbegreaterthan250characters@mailinatoThemessageieldmustnotbegreaterthan250characters.com",
                         "tetertertertertet5645646rtretertertertertet5645646rtretertertertertet5645646rtretertertertertet5645646rtretertertertertet5645646rtretertertertertet5645646rtretertertertertet5645646rtretertertertertet5645646rtretertertertertet5645646rtretertertertertet",
                         CONTACT_SUBJECTS[4], "data/uploadFileSample.txt",
-                        new String[]{"The name field must not be greater than 120 characters.'/\n' The message field must not be greater than 250 characters."}}
+                        new String[]{"The name field must not be greater than 120 characters.\n" +
+                                "The message field must not be greater than 250 characters."}}
         };
     }
 
-    @Test(dataProvider = "contactFormDataProvider",groups = "smoke")
+    @Test(dataProvider = "contactFormDataProvider", groups = "smoke")
     void contactFormTest(String firstName, String lastName, String email, String message,
                          String subject, String fileToUploadPath, String[] expectedMessages) throws Exception {
         pages.getContactPage().navigateToContact();
