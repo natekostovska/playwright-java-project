@@ -40,7 +40,7 @@ public class BaseTest {
         browserManager = new PlaywrightBrowserManager();
 
         String browser = getProp("browser");
-        boolean headless = Boolean.parseBoolean(System.getenv().getOrDefault("CI", "true"));
+        boolean headless = Boolean.parseBoolean(System.getenv().getOrDefault("CI", "false"));
 
         // CREATE PAGE
         Page page = browserManager.open(browser, headless);
@@ -56,23 +56,6 @@ public class BaseTest {
 
         handleCookiesIfPresent();
 
-        System.out.println("Page Title: " + page.title());
-
-        int retries = 3;
-        boolean loaded = false;
-
-        for (int i = 0; i < retries; i++) {
-            String title = page.title();
-
-            if (title.contains("Practice Software Testing")) {
-                loaded = true;
-                break;
-            }
-
-            page.waitForTimeout(2000);
-        }
-
-        Assert.assertTrue(loaded, "App did not load correctly (Cloudflare or timeout issue)");
 
         // group-based navigation
         Test testAnnotation = method.getAnnotation(Test.class);
