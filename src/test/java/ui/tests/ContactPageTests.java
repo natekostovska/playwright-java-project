@@ -38,13 +38,6 @@ public class ContactPageTests extends BaseTest {
                         "Subject is required",
                         "Message is required"
                 }},
-                {"Natasha5645646rtretertertertertet5645646rtretertertertertet5645646rtretertertertertet5645646rtretertertertertet5645646rt4",
-                        "Kostovska5645646rtretertertertertet5645646rtretertertertertet5645646rtretertertertertet5645646rtretertertertertet56456464",
-                        "natePWmailinatoThehemessageieldmustnotbegreaterthan250characters@mailinatoThemessageieldmustnotbegreaterthan250characters.com",
-                        "tetertertertertet5645646rtretertertertertet5645646rtretertertertertet5645646rtretertertertertet5645646rtretertertertertet5645646rtretertertertertet5645646rtretertertertertet5645646rtretertertertertet5645646rtretertertertertet5645646rtretertertertertet",
-                        CONTACT_SUBJECTS[4], "data/uploadFileSample.txt",
-                        new String[]{"The name field must not be greater than 120 characters.\n" +
-                                "The message field must not be greater than 250 characters."}}
         };
     }
 

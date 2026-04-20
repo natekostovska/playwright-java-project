@@ -12,15 +12,15 @@ import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 import ui.tests.BaseTest;
+import ui.utils.reports.extentreports.ExtentManager;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
 
-public class TestListener extends BaseTest implements ITestListener {
+public class TestListener implements ITestListener {
 
-    private static ExtentManager ExtentManager;
     private static final ExtentReports extent = ExtentManager.createInstance();
     private static final ThreadLocal<ExtentTest> extentTest = new ThreadLocal<>();
 
@@ -29,56 +29,83 @@ public class TestListener extends BaseTest implements ITestListener {
         return methodName + "_" + d.toString().replace(":", "_").replace(" ", "_") + ".png";
     }
 
+    // Safe getter
+    private ExtentTest getTest() {
+        return extentTest.get();
+    }
+
     @Override
     public void onTestStart(ITestResult result) {
-        Object[] parameters = result.getParameters();
-        ExtentTest test;
 
-        if (parameters.length > 0) {
-            String scenario = (String) parameters[parameters.length - 1];
-            String testName = result.getTestClass().getName() + " :: " + result.getMethod().getMethodName() + " - " + scenario;
+        String testName;
+
+        Object[] parameters = result.getParameters();
+
+        if (parameters != null && parameters.length > 0) {
+            String scenario = String.valueOf(parameters[parameters.length - 1]);
+            testName = result.getTestClass().getName()
+                    + " :: " + result.getMethod().getMethodName()
+                    + " - " + scenario;
+
             result.setTestName(testName);
             result.getMethod().setDescription(scenario);
-            test = extent.createTest(testName);
         } else {
-            String testName = result.getTestClass().getName() + " :: " + result.getMethod().getMethodName();
-            test = extent.createTest(testName);
+            testName = result.getTestClass().getName()
+                    + " :: " + result.getMethod().getMethodName();
         }
 
+        ExtentTest test = extent.createTest(testName);
         extentTest.set(test);
     }
 
     @Override
     public void onTestSuccess(ITestResult result) {
-        String logText = "<b>Test Method " + result.getMethod().getMethodName() + " Successful</b>";
-        Markup markup = MarkupHelper.createLabel(logText, ExtentColor.GREEN);
-        extentTest.get().log(Status.PASS, markup);
+        ExtentTest test = getTest();
+        if (test != null) {
+            String logText = "<b>Test Method " + result.getMethod().getMethodName() + " Successful</b>";
+            test.log(Status.PASS, MarkupHelper.createLabel(logText, ExtentColor.GREEN));
+        }
     }
 
     @Override
     public void onTestFailure(ITestResult result) {
+
+        ExtentTest test = getTest();
         String methodName = result.getMethod().getMethodName();
-        String exception = result.getThrowable() != null ? result.getThrowable().toString() : "No Exception";
+        String exception = result.getThrowable() != null
+                ? result.getThrowable().toString()
+                : "No Exception";
 
-        extentTest.get().fail("<details><summary><b><font color=red>Exception Occurred, clickNthElement to expand</font></b></summary>"
-                + exception.replaceAll(",", "<br>") + "</details> \n");
-
-        // Capture and attach Playwright screenshot
-        String screenshotPath = takePlaywrightScreenshot(methodName);
-        if (screenshotPath != null) {
-            extentTest.get().fail("<b><font color=red>Screenshot of failure</font></b>",
-                    MediaEntityBuilder.createScreenCaptureFromPath(screenshotPath).build());
+        if (test != null) {
+            test.fail("<details><summary><b><font color=red>Exception</font></b></summary>"
+                    + exception.replaceAll(",", "<br>") + "</details>");
         }
 
-        String logText = "<b>Method " + methodName + " Failed</b>";
-        extentTest.get().log(Status.FAIL, MarkupHelper.createLabel(logText, ExtentColor.RED));
+        // screenshot (safe)
+        String screenshotPath = takePlaywrightScreenshot(methodName);
+
+        if (test != null && screenshotPath != null) {
+            try {
+                test.fail("<b><font color=red>Screenshot</font></b>",
+                        MediaEntityBuilder.createScreenCaptureFromPath(screenshotPath).build());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (test != null) {
+            String logText = "<b>Method " + methodName + " Failed</b>";
+            test.log(Status.FAIL, MarkupHelper.createLabel(logText, ExtentColor.RED));
+        }
     }
 
     @Override
     public void onTestSkipped(ITestResult result) {
-        String logText = "<b>Test Method " + result.getMethod().getMethodName() + " Skipped</b>";
-        Markup m = MarkupHelper.createLabel(logText, ExtentColor.YELLOW);
-        extentTest.get().log(Status.SKIP, m);
+        ExtentTest test = getTest();
+        if (test != null) {
+            String logText = "<b>Test Method " + result.getMethod().getMethodName() + " Skipped</b>";
+            test.log(Status.SKIP, MarkupHelper.createLabel(logText, ExtentColor.YELLOW));
+        }
     }
 
     @Override
@@ -88,40 +115,44 @@ public class TestListener extends BaseTest implements ITestListener {
 
     @Override
     public void onStart(ITestContext context) {
-        // Optional: add system info here
+        // optional setup
     }
 
     @Override
     public void onFinish(ITestContext context) {
-        if (extent != null) {
-            extent.flush();
-        }
+        extent.flush();
     }
 
     /**
-     * Takes a screenshot using Playwright's Page and saves it to disk.
-     *
-     * @param methodName The name of the test method
-     * @return relative path to screenshot or null if failed
+     * Playwright screenshot helper (SAFE)
      */
     public String takePlaywrightScreenshot(String methodName) {
-        if (page == null) return null;
-
-        String screenshotName = getScreenshotName(methodName);
-        String directory = System.getProperty("user.dir") + "/extent/screenshots/";
-        new File(directory).mkdirs();
-        String path = directory + screenshotName;
 
         try {
-            byte[] screenshotBytes = page.screenshot(new Page.ScreenshotOptions().setFullPage(true));
+            Page page = BaseTest.getPage(); // IMPORTANT: must be static accessor
+
+            if (page == null) return null;
+
+            String screenshotName = getScreenshotName(methodName);
+            String directory = System.getProperty("user.dir") + "/extent/screenshots/";
+
+            new File(directory).mkdirs();
+
+            String path = directory + screenshotName;
+
+            byte[] screenshotBytes = page.screenshot(
+                    new Page.ScreenshotOptions().setFullPage(true)
+            );
+
             try (FileOutputStream fos = new FileOutputStream(path)) {
                 fos.write(screenshotBytes);
             }
-            return "../screenshots/" + screenshotName; // for HTML relative path
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        return null;
+            return "screenshots/" + screenshotName;
+
+        } catch (IOException | RuntimeException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
