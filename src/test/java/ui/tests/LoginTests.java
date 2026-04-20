@@ -34,7 +34,7 @@ public class LoginTests extends BaseTest {
         Assert.assertTrue(pages.getLoginPage().isVisible(loginHeading), "Login page is not visible");
         pages.getLoginPage().login(email, password);
         Assert.assertEquals(pages.getLoginPage().getText(accountTitle),"My account","Account title mismatch");
-        Assert.assertTrue(pages.getLoginPage().getText(loggedUserName).contains("Natasha Kostovska"), "Logged-in user name mismatch");
+        Assert.assertTrue(pages.getLoginPage().getText(loggedUserName).contains("Jane Doe"), "Logged-in user name mismatch");
         System.out.println(testScenario);
     }
 

@@ -26,6 +26,10 @@ public class StaticVariables {
     public static String fakeCity = faker.address().cityName();
     public static String fakePhoneNumber = faker.phoneNumber().cellPhone();
     public static String fakeAlias = faker.address().streetAddress() + "," + faker.address().streetAddressNumber();
+    public static String fakeStreetAddress=faker.address().streetAddress();
+    public static String fakeState=faker.address().state();
+    public static String fakeCountry=faker.address().country();
+    public static String fakePostalCode=faker.address().zipCode();
 
 
     // Page titles and messages
